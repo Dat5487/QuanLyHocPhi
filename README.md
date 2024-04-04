@@ -3,7 +3,6 @@ Một số giao diện web
 
 
 Giao diện cán bộ quản lý học phần:
-![image](https://github.com/Dat5487/QuanLyHocPhi/assets/109160535/098379ea-1886-4a5c-b00b-860644a4b71b)
 
 ![image](https://github.com/Dat5487/QuanLyHocPhi/assets/109160535/33d3717c-cccc-4601-90d8-1965834271cd)
 
