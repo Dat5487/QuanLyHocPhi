@@ -1,0 +1,247 @@
+{% extends "SinhVien/sinhVienBase.html" %}
+{% load static %}
+{% block title %}Thanh toán khoản thu{% endblock %}
+{% block content %}
+<div class="card shadow mb-4">
+  <div class="card-header py-3">
+      <h4 class="m-0 font-weight-bold text-primary">Thanh toán khoản thu</h4>
+  </div>
+  <div class="card-body">
+    <form method="POST" action="{% url 'thanhToan' idSV %}">
+      {% csrf_token %}
+      <div class="row">
+        <div class="col-4 border my-2 p-2">
+          <input class="form-control" id="idSV" name="sinhVien" value="{{ sinhVien.id }}" hidden>
+          <div class="form-group mt-2">
+            <label class="fw-bold">Mã sinh viên</label>
+            <label>{{ sinhVien.maSV }}</label>
+          </div>
+          <div class="form-group mt-2">
+            <label class="fw-bold  ">Họ tên : </label>
+            <label id="hoTen">{{ sinhVien.hoTen }}</label>
+          </div>
+          <div class="form-group mt-2">
+            <label class="fw-bold  ">Lớp : </label>
+            <label>{{ sinhVien.lop.lop }}</label>
+          </div>
+        </div>
+        <div class="col-4 border my-2 p-2">
+          <div class="form-group mt-2">
+            <label class="fw-bold  ">Khoản thu</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <img class="custom-image-size" src="{% static 'images/khoanthu.png' %}" alt="Image">
+                </span>
+              </div>
+            <select class="form-control combobox" name="khoanThu" id="khoanThu" onchange="getMucHocPhiInfo()" required>
+              <option value=""></option>
+              {% for value in listKhoanThuHocPhi %}
+              <option value="{{ value.id }}">{{ value.mucHocPhi.namHoc}} -
+                {% if value.mucHocPhi.hocKy == True %}
+                Học kỳ 1
+                {% else %}
+                Học kỳ 2
+                {% endif %}
+              </option>
+              {% endfor %}
+            </select>
+            </div>
+          </div>
+          <!-- Id Tàng hình -->
+          <div class="form-group mt-2">
+            <input class="form-control" name="khoanThuHocPhi" value="{{ value.id }}" id="id" hidden>
+          </div>
+
+          <div class="form-group mt-2">
+            <label class="fw-bold  ">Hệ đào tạo : </label>
+            <label id="heDaoTao"></label>
+          </div>
+          <div class="form-group mt-2">
+            <label class="fw-bold  ">Tên ngành : </label>
+            <label id="tenNganh"></label>
+          </div>
+          <div class="form-group mt-2">
+            <label class="fw-bold  ">Khoa : </label>
+            <label id="khoa"></label>
+          </div>
+          <div class="form-group mt-2">
+            <label class="fw-bold  ">Lớp : </label>
+            <label id="lop"></label>
+          </div>
+          <div class="form-group mt-2">
+            <label class="fw-bold  ">Số tiền : </label>
+            <label id="soTien"></label>
+          </div>
+        </div>
+        <div class="col-4 border my-2 p-2">
+          <div class="form-group mt-2">
+            <label class="fw-bold  ">Hạn nộp : </label>
+            <label id="hanNop"></label>
+          </div>
+          <div class="form-group mt-2">
+            <label class="fw-bold  ">Số tiền miễn giảm : </label>
+            <label id="soTienMienGiam"></label>
+          </div>
+          <div class="form-group mt-2">
+            <label class="fw-bold  ">Mã số thuế : </label>
+            <label id="maSoThue"></label>
+          </div>
+          <div class="form-group mt-2">
+            <label class="fw-bold  ">Nội dung thu : </label><br />
+            <label id="noiDungThu"></label>
+          </div>
+          <div class="form-group mt-2">
+            <label class="fw-bold  ">Ghi chú : </label><br />
+            <label id="ghiChu"></label>
+          </div>
+          <div class="form-group mt-2">
+            <label class="fw-bold  ">Tổng số tiền : </label>
+            <label id="tongSoTien"></label>
+          </div>
+          <div class="form-group mt-2">
+            <label class="fw-bold  ">Trạng thái : </label>
+            <label id="trangThai"></label>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <center>
+          <button type="submit" id="btnXacNhan" class="btn btn-primary mt-3" disabled>Thanh toán bằng VNPAY</button>
+            <a class="btn btn-danger mt-3" href="##" onClick="history.go(-1); return false;">Hủy</a>
+          </center>
+          </div>
+      </div>
+    </form>
+  </div>
+</div>
+<script>
+  $("input[data-type='currency']").on({
+      keyup: function() {
+      formatCurrency($(this));
+      },
+      blur: function() { 
+      formatCurrency($(this), "blur");
+      }
+  });
+
+  function formatNumber(n) {
+  return n.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+  }
+
+
+  function formatCurrency(input, blur) {
+  var input_val = input.val();
+  if (input_val === "") { return; }
+  var original_len = input_val.length;
+  var caret_pos = input.prop("selectionStart");
+  if (input_val.indexOf(".") >= 0) {
+      var decimal_pos = input_val.indexOf(".");
+      var left_side = input_val.substring(0, decimal_pos);
+      var right_side = input_val.substring(decimal_pos);
+      left_side = formatNumber(left_side);
+      right_side = formatNumber(right_side);
+      if (blur === "blur") {
+      right_side += "00";
+      }
+      right_side = right_side.substring(0, 2);
+      input_val = left_side + "." + right_side;
+  } else {
+      input_val = formatNumber(input_val);
+      input_val = input_val ;
+  }
+  input.val(input_val);
+  var updated_len = input_val.length;
+  caret_pos = updated_len - original_len + caret_pos;
+  input[0].setSelectionRange(caret_pos, caret_pos);
+  }
+  function getSVInfo() {
+        var inputIdSV = document.getElementById('idSV');
+        var inputSV = document.getElementById('maSV');
+        var labelHoten = document.getElementById('hoTen');
+        var labelNgaySinh = document.getElementById('ngaySinh');
+        var labelQueQuan = document.getElementById('queQuan');
+        var labelLop = document.getElementById('labelLop');
+        var maSV = inputSV.value;
+        inputIdSV.value = ""
+        labelHoten.textContent = ""
+        labelQueQuan.textContent = ""
+        labelNgaySinh.textContent = ""
+        labelLop.textContent = ""
+        labelTrangThai.textContent = ""
+        {% for value in listSinhVien %}
+          if ("{{ value.maSV }}" == maSV) {
+            inputIdSV.value = "{{ value.id }}"
+            labelHoten.textContent = "{{ value.hoTen }}"
+            labelQueQuan.textContent = "{{ value.queQuan }}"
+            labelNgaySinh.textContent = "{{ value.ngaySinh }}"
+            labelLop.textContent = "{{ value.lop.lop }}"
+          }
+      {% endfor %}
+        }
+  function getMucHocPhiInfo(event) {
+    var cmbKhoanThu = document.getElementById('khoanThu');
+    var inputId = document.getElementById('id');
+    var labelHeDaoTao = document.getElementById('heDaoTao');
+    var labelTenNganh = document.getElementById('tenNganh');
+    var labelKhoa = document.getElementById('khoa');
+    var labelLop = document.getElementById('lop');
+    var labelSoTien = document.getElementById('soTien');
+    var labelHanNop = document.getElementById('hanNop');
+    var labelSoTienMienGiam = document.getElementById('soTienMienGiam');
+    var labelMaSoThue = document.getElementById('maSoThue');
+    var labelNoiDungThu = document.getElementById('noiDungThu');
+    var labelGhiChu = document.getElementById('ghiChu');
+    var labelTongSoTien = document.getElementById('tongSoTien');
+    var labelTrangThai = document.getElementById('trangThai');
+
+    var btnXacNhan = document.getElementById("btnXacNhan");
+
+
+    var idKhoanThuHP = cmbKhoanThu.value;
+    inputId.value = "";
+    labelHeDaoTao.textContent = "";
+    labelTenNganh.textContent = "";
+    labelKhoa.textContent = "";
+    labelLop.textContent = "";
+
+    labelHanNop.textContent = "";
+    labelSoTienMienGiam.textContent = "";
+    labelMaSoThue.textContent = "";
+    labelTongSoTien.textContent = "";
+    labelNoiDungThu.textContent = "";
+    labelGhiChu.textContent = "";
+    labelTrangThai.textContent = "";
+
+    {% for value in listKhoanThuHocPhi %}
+        if ("{{ value.id }}" == idKhoanThuHP) {
+            inputId.value = "{{ value.id }}"
+            labelHeDaoTao.textContent = "{{ value.mucHocPhi.heDaoTao }}"
+            labelTenNganh.textContent = "{{ value.mucHocPhi.tenNganh }}"
+            labelKhoa.textContent = "{{ value.mucHocPhi.khoa }}"
+            labelLop.textContent = "{{ value.mucHocPhi.lop }}"
+            labelSoTien.textContent = parseInt("{{ value.mucHocPhi.soTien }}").toLocaleString();
+
+            labelHanNop.textContent = "{{ value.hanNop }}"
+            labelSoTienMienGiam.textContent = parseInt("{{ value.soTienMienGiam }}").toLocaleString();
+            labelMaSoThue.textContent = "{{ value.maSoThue }}"
+            labelNoiDungThu.textContent = "{{ value.noiDungThu }}"
+            labelGhiChu.textContent = "{{ value.ghiChu }}"
+            labelTongSoTien.textContent = parseInt("{{ value.soTien }}").toLocaleString();
+            if ("{{ value.trangThai }}" == "False")
+            {
+              labelTrangThai.textContent = "Chưa nộp";
+              btnXacNhan.disabled = false;
+            }
+            else
+            {
+              labelTrangThai.textContent = "Đã nộp";
+              btnXacNhan.disabled = true;
+            }
+        }
+    {% endfor %}
+    }
+    
+</script>
+
+{% endblock %}

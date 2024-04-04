@@ -1,0 +1,192 @@
+{% extends 'TaiChinh/taiChinhBase.html' %}
+{% load static %}
+{% load humanizelib %}
+{% load l10n %}
+{% block title %}Lịch sử thanh toán{% endblock %}
+{% block content %}
+<style>
+    .bigger-icon {
+        font-size: 1.2em;
+        color: #000;
+    }
+    
+    .bigger-icon a {
+        text-decoration: none;
+    }
+</style>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <div class="row">
+            <div class="col-9">
+                <h4 class="m-0 font-weight-bold text-primary">Lịch sử thanh toán học phí của sinh viên : {{ sinhVien.hoTen }}</h4>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered" id="dataTable1" width="100%" cellspacing="0">
+                <thead>
+                <th>
+                    Mã thanh toán
+                </th>
+                <th>
+                    Số giao dịch
+                </th>
+                <th>
+                    Khoản thanh toán
+                </th>
+                <th>
+                    Số tiền
+                </th>
+                <th>
+                    Ngày nộp
+                </th>
+                <th>
+                    Kết quả
+                </th>
+                </thead>
+                <tbody>
+                    {% for thanhToan in listLichSuHocPhi %}
+                        <tr id="{{ thanhToan.maThanhToan }}">
+                            <td>{{ thanhToan.maThanhToan }}</td>
+                            <td>{{ thanhToan.soGiaoDich }}</td>
+                            <td>{{ thanhToan.noiDung }}</td> 
+                            <td>{{ thanhToan.soTien|intcomma|localize }}</td>
+                            <td>{{ thanhToan.timestamp }}</td>
+                            <td>{% if thanhToan.ketQua == "00" %}
+                                    <p class="text-success">Thành công</p>
+                                {% else %}
+                                    {{ thanhToan.ketQua }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <div class="row">
+            <div class="col-9">
+                <h4 class="m-0 font-weight-bold text-primary">Lịch sử thanh toán khác của sinh viên : {{ sinhVien.hoTen }}</h4>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered" id="dataTable2" width="100%" cellspacing="0">
+                <thead>
+                <th>
+                    Mã thanh toán
+                </th>
+                <th>
+                    Số giao dịch
+                </th>
+                <th>
+                    Khoản thanh toán
+                </th>
+                <th>
+                    Số tiền
+                </th>
+                <th>
+                    Ngày nộp
+                </th>
+                <th>
+                    Kết quả
+                </th>
+                </thead>
+                <tbody>
+                    {% for thanhToan in listLichSuKhac %}
+                        <tr id="{{ thanhToan.maThanhToan }}">
+                            <td>{{ thanhToan.maThanhToan }}</td>
+                            <td>{{ thanhToan.soGiaoDich }}</td>
+                            <td>{{ thanhToan.noiDung }}</td> 
+                            <td>{{ thanhToan.soTien|intcomma|localize }}</td>
+                            <td>{{ thanhToan.timestamp }}</td>
+                            <td>{% if thanhToan.ketQua == "00" %}
+                                    <p class="text-success">Thành công</p>
+                                {% else %}
+                                    {{ thanhToan.ketQua }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    // Auto-close the alert after 3 seconds (3000 milliseconds)
+    setTimeout(() => {
+      document.getElementById('myAlert').remove();
+    }, 3000);
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#dataTable1').DataTable({
+            language: {
+                searchPlaceholder: "Tìm kiếm",
+                search: "",
+                "sInfo": "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+                "sInfoEmpty": "Hiển thị 0 đến 0 của 0 mục",
+                "sInfoFiltered": "Lọc từ _MAX_ mục",
+                "sLengthMenu": "Hiện _MENU_ mục",
+                "sEmptyTable": "Không có dữ liệu",
+
+            },
+            stateSave: true,
+            dom: '<"clear"><"row"<"col"l><"col"f>>rt<"row"<"col"i><"col"p>><"row"<"col"B>>',
+            buttons: [
+                {
+                    extend: 'excel',
+                    exportOptions: {
+                        columns: ':not(:last-child)',
+                    }, title: ''
+                }, {
+                    extend: 'pdf',
+                    exportOptions: {
+                        columns: ':not(:last-child)',
+                    }, title: ''
+                }
+            ]
+        });
+        $('#dataTable2').DataTable({
+            language: {
+                searchPlaceholder: "Tìm kiếm",
+                search: "",
+                "sInfo": "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+                "sInfoEmpty": "Hiển thị 0 đến 0 của 0 mục",
+                "sInfoFiltered": "Lọc từ _MAX_ mục",
+                "sLengthMenu": "Hiện _MENU_ mục",
+                "sEmptyTable": "Không có dữ liệu",
+
+            },
+            stateSave: true,
+            dom: '<"clear"><"row"<"col"l><"col"f>>rt<"row"<"col"i><"col"p>><"row"<"col"B>>',
+            buttons: [
+                {
+                    extend: 'excel',
+                    exportOptions: {
+                        columns: ':not(:last-child)',
+                    }, title: ''
+                }, {
+                    extend: 'pdf',
+                    exportOptions: {
+                        columns: ':not(:last-child)',
+                    }, title: ''
+                }
+            ]
+        });
+    });
+
+    $(document).ready(function () {
+        $('.dataTables_filter input[type="search"]').css(
+            { 'width': '350px', 'display': 'inline-block', 'height': '40px' }
+        );
+    });
+</script>
+{% endblock %}

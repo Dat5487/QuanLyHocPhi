@@ -1,0 +1,134 @@
+{% extends 'TaiChinh/taiChinhBase.html' %}
+{% load static %}
+{% load humanizelib %}
+{% load l10n %}
+{% block title %}Danh sách các khoản thu khác{% endblock %}
+{% block content %}
+<style>
+    .bigger-icon {
+        font-size: 1.2em;
+        color: #000;
+    }
+    
+    .bigger-icon a {
+        text-decoration: none;
+    }
+</style>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <div class="row">
+                <div class="col-9">
+                    <h4 class="m-0 font-weight-bold text-primary">Danh sách các khoản thu</h4>
+                </div>
+                <div class="col-3">
+                    <a href="{% url 'newKhoanThuKhac' %}"><button class = "btn btn-success float-end" >Thêm khoản thu</button></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if alertContent == "Thêm" %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <strong>Thêm thiết lập khoản thu mới thành công!</strong>
+              </div>
+            {% endif %}
+            {% if alertContent == "Sửa" %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <strong>Sửa thiết lập khoản thu thành công!</strong>
+              </div>
+            {% endif %}
+            {% if alertContent == "Xóa" %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <strong>Xóa thiết lập khoản thu thành công!</strong>
+              </div>
+            {% endif %}
+            <div class="table-responsive mt-3">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                    <th>
+                        Hệ đào tạo
+                    </th>
+                    <th>
+                        Khoa
+                    </th>
+                    <th>
+                        Tên khoản
+                    </th>
+                    <th>
+                        Số tiền
+                    </th>
+                    <th>
+                        Thao tác
+                    </th>
+                    </thead>
+                    <tbody>
+                        {% for khoanThu in listKhoanThuKhac %}
+                            <tr id="{{ khoanThu.id }}">
+                                <td>{{ khoanThu.heDaoTao.tenHeDaoTao }}</td>
+                                {% if khoanThu.khoa == None %}
+                                    <td>Tất cả các khoa</td>
+                                {% else %}
+                                    <td>{{ khoanThu.khoa.tenKhoa }}</td>
+                                {% endif %}
+                                <td>{{ khoanThu.tenKhoan }}</td>
+                                <td>{{ khoanThu.soTien|intcomma|localize }}</td>
+                                <td style="text-align: center;">
+                                    <!-- <a href="{% url 'suaKhoanThuKhac' khoanThu.id %}">
+                                        <i class="fas fa-pen-to-square bigger-icon"></i>
+                                    </a> -->
+                                    <a href="{% url 'xoaKhoanThuKhac' khoanThu.id %}">
+                                        <i class="far fa-trash-alt bigger-icon"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+<script>
+    // Auto-close the alert after 3 seconds (3000 milliseconds)
+    setTimeout(() => {
+      document.getElementById('myAlert').remove();
+    }, 3000);
+</script>
+<script type="text/javascript">
+    $('#dataTable').DataTable({
+                language: {
+                    searchPlaceholder: "Tìm kiếm",
+                    search: "",
+                    "sInfo": "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+                    "sInfoEmpty": "Hiển thị 0 đến 0 của 0 mục",
+                    "sInfoFiltered": "Lọc từ _MAX_ mục",
+                    "sLengthMenu": "Hiện _MENU_ mục",
+                    "sEmptyTable": "Không có dữ liệu",
+    
+                },
+                stateSave: true,
+                dom: '<"clear"><"row"<"col"l><"col"f>>rt<"row"<"col"i><"col"p>><"row"<"col"B>>',
+                buttons: [
+                    {
+                        extend: 'excel',
+                        exportOptions: {
+                            columns: ':not(:last-child)',
+                        }, title: ''
+                    }, {
+                        extend: 'pdf',
+                        exportOptions: {
+                            columns: ':not(:last-child)',
+                        }, title: ''
+                    }
+                ]
+            });
+
+    $('.dataTables_filter input[type="search"]').css({
+        width: '350px',
+        display: 'inline-block',
+        height: '40px',
+    });
+    
+    </script>
+{% endblock %}

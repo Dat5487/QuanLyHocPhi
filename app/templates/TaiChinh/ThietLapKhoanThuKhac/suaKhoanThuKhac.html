@@ -1,0 +1,174 @@
+{% extends 'TaiChinh/taiChinhBase.html' %}
+{% load static %}
+{% block title %}Sửa thiết lập khoản thu{% endblock %}
+{% block content %}
+<div class="card shadow mb-4">
+  <div class="card-header py-3">
+    <h4 class="m-0 font-weight-bold text-primary">Sửa thiết lập khoản thu</h4>
+  </div>
+  <div class="card-body">
+    <form method="POST" action="{% url 'suaKhoanThuKhac' khoanThuKhac.id %}">
+      {% csrf_token %}
+      <div class="row">
+        <div class="col-6">
+          <div class="form-group mt-2">
+            <label class="fw-bold  ">Hệ đào tạo</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <img class="custom-image-size" src="{% static 'images/hedaotao.png' %}" alt="Image">
+                </span>
+              </div>
+              <select class="form-control combobox" name="heDaoTao" id="heDaoTao" onchange="handleComboboxChange1()">
+                {% for value in cacHeDaoTao %}
+                {% if value == khoanThuKhac.heDaoTao %}
+                <option value="{{ value.id }}" selected>{{ value.tenHeDaoTao }}</option>
+                {% else %}
+                <option value="{{ value.id }}">{{ value.tenHeDaoTao }}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="form-group mt-2">
+            <label class="fw-bold">Khoa</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <img class="custom-image-size" src="{% static 'images/khoa.png' %}" alt="Image">
+                </span>
+              </div>
+              <select class="form-control combobox" name="khoa" id="khoa" onchange="handleComboboxChange1()">
+                <option value="">Tất cả các khoa</option>
+                {% for value in cacKhoa %}
+                {% if value == khoanThuKhac.khoa %}
+                <option value="{{ value.id }}" selected>{{ value.tenKhoa }}</option>
+                {% else %}
+                <option value="{{ value.id }}">{{ value.tenKhoa }}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group mt-2">
+            <label class="fw-bold  ">Tên khoản</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <img class="custom-image-size" src="{% static 'images/khoanThu.png' %}" alt="Image">
+                </span>
+              </div>
+            <input class="form-control" name="tenKhoan" value="{{ khoanThuKhac.tenKhoan }}"></input>
+            </div>
+          </div>
+
+          <div class="form-group mt-2">
+            <label class="fw-bold  ">Số tiền</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <img class="custom-image-size" src="{% static 'images/muchocphi.png' %}" alt="Image">
+                </span>
+              </div>
+              <input type="text" class="form-control" name="soTien" id="currency-field" data-type="currency"
+                value="{{ soTien }}">
+            </div>
+          </div>
+
+          <div class="form-group mt-2">
+            <label class="fw-bold  ">Nội dung</label>
+            <textarea class="form-control" name="noiDung" rows="3">{{ khoanThuKhac.noiDung }}</textarea>
+          </div>
+
+        </div>
+
+      </div>
+      <button type="submit" class="btn btn-primary mt-3">Xác nhận</button>
+      <a class="btn btn-danger mt-3" href="{% url 'listKhoanThuKhac' %}">Hủy</a>
+    </form>
+  </div>
+</div>
+<script>
+    $("input[data-type='currency']").on({
+        keyup: function() {
+        formatCurrency($(this));
+        },
+        blur: function() { 
+        formatCurrency($(this), "blur");
+        }
+    });
+
+
+    function formatNumber(n) {
+    return n.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    }
+
+
+    function formatCurrency(input, blur) {
+    var input_val = input.val();
+    if (input_val === "") { return; }
+    var original_len = input_val.length;
+    var caret_pos = input.prop("selectionStart");
+    if (input_val.indexOf(".") >= 0) {
+        var decimal_pos = input_val.indexOf(".");
+        var left_side = input_val.substring(0, decimal_pos);
+        var right_side = input_val.substring(decimal_pos);
+        left_side = formatNumber(left_side);
+        right_side = formatNumber(right_side);
+        if (blur === "blur") {
+        right_side += "00";
+        }
+        right_side = right_side.substring(0, 2);
+        input_val = left_side + "." + right_side;
+    } else {
+        input_val = formatNumber(input_val);
+        input_val = input_val ;
+    }
+    input.val(input_val);
+    var updated_len = input_val.length;
+    caret_pos = updated_len - original_len + caret_pos;
+    input[0].setSelectionRange(caret_pos, caret_pos);
+    }
+
+    function handleComboboxChange1() {
+      var cmbHeDaoTao = document.getElementById('heDaoTao');
+      var cmbNganhDaoTao = document.getElementById('tenNganh');
+      var cmbKhoa = document.getElementById('khoa');
+      var selectedHeDaoTao = cmbHeDaoTao.value;
+      var selectedKhoa = cmbKhoa.value;
+      
+      cmbNganhDaoTao.innerHTML = '';
+      
+      {% for value in cacNganhDaoTao %}
+        if ("{{ value.heDaoTao.tenHeDaoTao }}" == selectedHeDaoTao && "{{ value.khoa.tenKhoa }}" == selectedKhoa) {
+          var newOption = document.createElement('option');
+          newOption.value = "{{ value.tenNganhDaoTao }}";
+          newOption.textContent = "{{ value.tenNganhDaoTao }}";
+          cmbNganhDaoTao.appendChild(newOption);
+        }
+      {% endfor %}
+      var cmbKhoaHoc = document.getElementById('khoaHoc');
+      var cmbNganhDaoTao = document.getElementById('tenNganh');
+      var cmbLop = document.getElementById('lop');
+      var selectedNganhDaoTao = cmbNganhDaoTao.value;
+      
+      cmbLop.innerHTML = '';
+      
+      {% for value in cacLop %}
+        if ("{{ value.nganhDaoTao.tenNganhDaoTao }}" == selectedNganhDaoTao) {
+          var newOption = document.createElement('option');
+          newOption.value = "{{ value.lop }}";
+          newOption.textContent = "{{ value.lop }}";
+          if ("{{ value.lop }}" == "{{ mucHocPhi.lop }}") {
+            newOption.selected = true;
+          }
+          
+          cmbLop.appendChild(newOption);
+        }
+      {% endfor %}
+    }
+    window.onload = handleComboboxChange1()
+  </script>
+  
+{% endblock %}

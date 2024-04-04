@@ -1,0 +1,232 @@
+{% extends 'TaiChinh/taiChinhBase.html' %}
+{% load static %}
+{% load humanizelib %}
+{% load l10n %}
+{% block title %}Danh sách khoản thu của sinh viên : {{ sinhVien.hoTen }}{% endblock %}
+{% block content %}
+<style>
+    .bigger-icon {
+        font-size: 1.2em;
+        color: #000;
+    }
+    
+    .bigger-icon a {
+        text-decoration: none;
+    }
+</style>
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <div class="row">
+            <div class="col-9">
+                <h4 class="m-0 font-weight-bold text-primary">Danh sách các khoản thu học phí của sinh viên : {{ sinhVien.hoTen }}</h4>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered" id="dataTable1" width="100%" cellspacing="0">
+                <thead>
+                <th>
+                    Mã sinh viên
+                </th>
+                <th>
+                    Họ tên
+                </th>
+                <th>
+                    Năm học
+                </th>
+                <th>
+                    Học kỳ
+                </th>
+                <th>
+                    Tổng số tiền
+                </th>
+                <th>
+                    Số tín chỉ
+                </th>
+                <th>
+                    Trạng thái
+                </th>
+                <th>
+                    Thao tác
+                </th>
+                </thead>
+                <tbody>
+                    {% for khoanThu in listKhoanHocPhi %}
+                        <tr id="{{ khoanThu.id }}">
+                            <td>{{ khoanThu.sinhVien.maSV }}</td>
+                            <td>{{ khoanThu.sinhVien.hoTen }}</td>
+                            <td>{{ khoanThu.hocPhanDuocXetDuyet.hocPhanDaDangKy.namHoc.namHoc }}</td>
+                            <td>
+                                {% if khoanThu.hocPhanDuocXetDuyet.hocPhanDaDangKy.hocKy == True %}
+                                    Học kỳ 1
+                                {% else %}
+                                    Học kỳ 2
+                                {% endif %}
+                            </td>
+                            <td>{{ khoanThu.soTien|intcomma|localize }}</td>
+                            <td>{{ khoanThu.soTinChi }}</td>
+                            <td>
+                                {% if khoanThu.trangThai == True %}
+                                    <center class="text-success">Đã nộp</center>
+                                {% else %}
+                                    <center class="text-danger">Chưa nộp</center>
+                                {% endif %}
+                            </td>  
+                            <td style="text-align: center;">
+                                <a href="{% url 'xemKhoanThuHocPhi' khoanThu.id %}">
+                                    <i class="fas fa-circle-info bigger-icon"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <div class="row">
+            <div class="col-11">
+                <h4 class="m-0 font-weight-bold text-primary">Danh sách khoản thu khác của sinh viên : {{ sinhVien.hoTen }}</h4>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered" id="dataTable2" width="100%" cellspacing="0">
+                <thead>
+                    <th>
+                        Mã sinh viên
+                    </th>
+                    <th>
+                        Họ tên
+                    </th>
+                    <th>
+                        Tên khoản
+                    </th>
+                    <th>
+                        Ngày thêm
+                    </th>
+                    <th>
+                        Hạn nộp
+                    </th>
+                    <th>
+                        Số tiền
+                    </th>
+                    <th>
+                        Trạng thái
+                    </th>
+                    <th>
+                        Thao tác
+                    </th>
+                </thead>
+                <tbody>
+                    {% for khoanThu in listKhoanThuKhac %}
+                    <tr id="{{ khoanThu.id }}">
+                        <td>{{ khoanThu.sinhVien.maSV }}</td>
+                        <td>{{ khoanThu.sinhVien.hoTen }}</td>
+                        <td>{{ khoanThu.khoanThuKhac.tenKhoan }}</td>
+                        <td>{{ khoanThu.ngayThem|date:"d F Y" }}</td>
+                        {% if khoanThu.hanNop == none %}
+                            <td>Không có hạn</td>
+                        {% else %}
+                            <td>{{ khoanThu.hanNop|date:"d F Y" }}</td>
+                        {% endif %}
+                        <td>{{ khoanThu.soTien|intcomma|localize }}</td>
+                        <td>
+                            {% if khoanThu.trangThai == True %}
+                            <center class="text-success">Đã nộp</center>
+                            {% else %}
+                            <center class="text-danger">Chưa nộp</center>
+                            {% endif %}
+                        </td>
+                        <td style="text-align: center;">
+                            <a href="{% url 'xemThanhToanKhoanThuKhac' khoanThu.id %}">
+                                <i class="fas fa-circle-info bigger-icon"></i>
+                            </a>
+                            <a href="{% url 'xoaThanhToanKhoanThuKhac' khoanThu.id %}">
+                                <i class="far fa-trash-alt bigger-icon"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Auto-close the alert after 3 seconds (3000 milliseconds)
+    setTimeout(() => {
+      document.getElementById('myAlert').remove();
+    }, 3000);
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#dataTable1').DataTable({
+            language: {
+                searchPlaceholder: "Tìm kiếm",
+                search: "",
+                "sInfo": "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+                "sInfoEmpty": "Hiển thị 0 đến 0 của 0 mục",
+                "sInfoFiltered": "Lọc từ _MAX_ mục",
+                "sLengthMenu": "Hiện _MENU_ mục",
+                "sEmptyTable": "Không có dữ liệu",
+
+            },
+            stateSave: true,
+            dom: '<"clear"><"row"<"col"l><"col"f>>rt<"row"<"col"i><"col"p>><"row"<"col"B>>',
+            buttons: [
+                {
+                    extend: 'excel',
+                    exportOptions: {
+                        columns: ':not(:last-child)',
+                    }, title: ''
+                }, {
+                    extend: 'pdf',
+                    exportOptions: {
+                        columns: ':not(:last-child)',
+                    }, title: ''
+                }
+            ]
+        });
+        $('#dataTable2').DataTable({
+            language: {
+                searchPlaceholder: "Tìm kiếm",
+                search: "",
+                "sInfo": "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+                "sInfoEmpty": "Hiển thị 0 đến 0 của 0 mục",
+                "sInfoFiltered": "Lọc từ _MAX_ mục",
+                "sLengthMenu": "Hiện _MENU_ mục",
+                "sEmptyTable": "Không có dữ liệu",
+
+            },
+            stateSave: true,
+            dom: '<"clear"><"row"<"col"l><"col"f>>rt<"row"<"col"i><"col"p>><"row"<"col"B>>',
+            buttons: [
+                {
+                    extend: 'excel',
+                    exportOptions: {
+                        columns: ':not(:last-child)',
+                    }, title: ''
+                }, {
+                    extend: 'pdf',
+                    exportOptions: {
+                        columns: ':not(:last-child)',
+                    }, title: ''
+                }
+            ]
+        });
+    });
+
+    $(document).ready(function () {
+        $('.dataTables_filter input[type="search"]').css(
+            { 'width': '350px', 'display': 'inline-block', 'height': '40px' }
+        );
+    });
+</script>
+{% endblock %}

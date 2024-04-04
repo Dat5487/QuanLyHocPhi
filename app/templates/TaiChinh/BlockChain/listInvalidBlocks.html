@@ -1,0 +1,46 @@
+{% extends 'TaiChinh/taiChinhBase.html' %}
+{% load static %}
+{% block title %}Danh sách các block không hợp lệ{% endblock %}
+
+{% block content %}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <div class="row">
+            <div class="col-9">
+                <h4 class="m-0 font-weight-bold text-primary">Danh sách các block không hợp lệ</h4>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                <th>
+                    ID
+                </th>
+                <th>
+                    Vị trí
+                </th>
+                <th>
+                    Thời gian tạo
+                </th>
+                <th>
+                    Mã hàm băm
+                </th>
+                </thead>
+                <tbody>
+                    {% for block in invalidBlocks %}
+                        <tr id="{{ block.id }}">
+                            <td>{{ block.id }}</td>
+                            <td>{{ block.index }}</td>
+                            <td>{{ block.timestamp }}</td>
+                            <td>{{ block.hash  }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

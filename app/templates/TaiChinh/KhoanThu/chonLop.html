@@ -1,0 +1,128 @@
+{% extends 'TaiChinh/taiChinhBase.html' %}
+{% load static %}
+{% block title %}Danh sách khoản thu{% endblock %}
+
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h4 class="m-0 font-weight-bold text-primary">Danh sách khoản thu</h4>
+    </div>
+    <div class="card-body">
+        <nav class="sb-sidenav accordion sb-sidenav-light" id="sidenavAccordion">
+            <div class="sb-sidenav-menu">
+                <div class="nav">
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="" data-bs-target="#a" aria-expanded="false" aria-controls="collapsePages">
+                        <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                        Danh sách khoản thu
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+                    <div class="" id="a" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                            <hr/>
+                            <h6>Danh sách hệ đào tạo</h6>
+                            {% for heDaoTao in ListHeDaoTao %}
+                                <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#idHeDaoTao{{ heDaoTao.id }}" aria-expanded="false" aria-controls="collapsePages">
+                                    <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                    {{ heDaoTao.tenHeDaoTao }}
+                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                </a>
+                                <div class="collapse" id="idHeDaoTao{{ heDaoTao.id }}" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                                    <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                        <hr/>
+                                        <h6>Khóa học</h6>
+                                        {% for khoaHoc in ListKhoaHoc %}
+                                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#idKhoaHoc{{ heDaoTao.id }}{{ khoaHoc.id }}" aria-expanded="false" aria-controls="collapsePages">
+                                                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                                {{ khoaHoc.namKhoaHoc }}
+                                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                            </a>
+                                            <div class="collapse" id="idKhoaHoc{{ heDaoTao.id }}{{ khoaHoc.id }}" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                                                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                                    <hr/>
+                                                    <h6>Danh sách khoa</h6>
+                                                    {% for khoa in ListKhoa %}
+                                                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#idKhoa{{ heDaoTao.id }}{{ khoaHoc.id }}{{ khoa.id }}" aria-expanded="false" aria-controls="collapsePages">
+                                                            <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                                            {{ khoa.tenKhoa }}
+                                                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                                        </a>
+                                                        <div class="collapse" id="idKhoa{{ heDaoTao.id }}{{ khoaHoc.id }}{{ khoa.id }}" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                                                            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                                                <hr/>
+                                                                <h6>Danh sách ngành đào tạo</h6>
+                                                                {% for nganhDaoTao in ListNganhDaoTao %}
+                                                                    {% if nganhDaoTao.khoa == khoa and nganhDaoTao.heDaoTao == heDaoTao %}
+                                                                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#idLop{{ heDaoTao.id }}{{ khoaHoc.id }}{{ khoa.id }}{{ lop.id }}" aria-expanded="false" aria-controls="collapsePages">
+                                                                            <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                                                            {{ nganhDaoTao.tenNganhDaoTao }}
+                                                                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                                                        </a>
+                                                                        <div class="collapse" id="idLop{{ heDaoTao.id }}{{ khoaHoc.id }}{{ khoa.id }}{{ lop.id }}" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                                                                            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                                                                <hr/>
+                                                                                <h6>Danh sách lớp</h6>
+                                                                                {% for lop in ListLop %}
+                                                                                    {% if lop.khoaHoc == khoaHoc and lop.heDaoTao == heDaoTao and lop.nganhDaoTao == nganhDaoTao %}
+                                                                                        <a class="nav-link collapsed" href="{% url 'listSinhVien' lop.id %}" >
+                                                                                            <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                                                                            {{ lop.lop }}
+                                                                                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                                                                        </a>
+                                                                                        
+                                                                                    {% endif %}
+                                                            
+                                                                                {%  endfor %}
+                                                            
+                                                                                
+                                                                            </nav>
+                                                                        </div>
+                                                                    {% endif %}
+                                            
+                                                                {%  endfor %}
+                                            
+                                                                
+                                                            </nav>
+                                                        </div>
+                                
+                                                    {%  endfor %}
+                                
+                                                    
+                                                </nav>
+                                            </div>
+                    
+                                        {%  endfor %}
+                    
+                                        
+                                    </nav>
+                                </div>
+
+                            {%  endfor %}
+
+                            
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

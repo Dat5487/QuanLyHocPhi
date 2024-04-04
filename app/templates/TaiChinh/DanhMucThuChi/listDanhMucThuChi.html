@@ -1,0 +1,191 @@
+{% extends 'TaiChinh/taiChinhBase.html' %}
+{% load static %}
+{% block title %}Danh mục thu chi{% endblock %}
+{% block content %}
+<style>
+    .bigger-icon {
+        font-size: 1.2em;
+        color: #000;
+    }
+    
+    .bigger-icon a {
+        text-decoration: none;
+    }
+</style>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <div class="row">
+                <div class="col-9">
+                    <h4 class="m-0 font-weight-bold text-primary">Danh sách danh mục thu chi</h4>
+                </div>
+                <div class="col-3">
+                    <a href="/danhmucthuchi/newdanhmucthuchi"><button class = "btn btn-success float-end" >Thêm danh mục thu chi</button></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if alertContent == "Thêm" %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <strong>Thêm danh mục thu chi mới thành công!</strong>
+              </div>
+            {% endif %}
+            {% if alertContent == "Sửa" %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <strong>Sửa danh mục thu chi thành công!</strong>
+              </div>
+            {% endif %}
+            {% if alertContent == "Xóa" %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <strong>Xóa danh mục thu chi thành công!</strong>
+              </div>
+            {% endif %}
+            <div class="table-responsive mt-3">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                    <th>
+                        Tên khoản
+                    </th>
+                    <th>
+                        Khoản thu
+                    </th>
+                    <th>
+                        Khoản chi
+                    </th>
+                    <th>
+                        Khoản thu nhập học
+                    </th>
+                    <th>
+                        Học phí
+                    </th>
+                    <th>
+                        Thu trực tuyến
+                    </th>
+                    <th>
+                        Thao tác
+                    </th>
+                    </thead>
+                    <tbody>
+                        {% for danhMucThuChi in ListDanhMucThuChi %}
+                            <tr id="{{ danhMucThuChi.id }}">
+                                <td>{{ danhMucThuChi.tenKhoan }}</td>
+                                <td>
+                                    {% if danhMucThuChi.isKhoanThu %}
+                                        <center><input type="checkbox" class="editor-active" onclick="return false;" checked></center>
+                                    {% else %}
+                                        <center><input type="checkbox" class="editor-active" onclick="return false;"></center>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if danhMucThuChi.isKhoanChi %}
+                                        <center><input type="checkbox" class="editor-active" onclick="return false;" checked></center>
+                                    {% else %}
+                                        <center><input type="checkbox" class="editor-active" onclick="return false;"></center>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if danhMucThuChi.isKhoanThuNhapHoc %}
+                                        <center><input type="checkbox" class="editor-active" onclick="return false;" checked></center>
+                                    {% else %}
+                                        <center><input type="checkbox" class="editor-active" onclick="return false;"></center>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if danhMucThuChi.isHocPhi %}
+                                        <center><input type="checkbox" class="editor-active" onclick="return false;" checked></center>
+                                    {% else %}
+                                        <center><input type="checkbox" class="editor-active" onclick="return false;"></center>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if danhMucThuChi.isThuTrucTuyen %}
+                                        <center><input type="checkbox" class="editor-active" onclick="return false;" checked></center>
+                                    {% else %}
+                                        <center><input type="checkbox" class="editor-active" onclick="return false;"></center>
+                                    {% endif %}
+                                </td>
+                                <td style="text-align: center;">
+                                    <a href="{% url 'suaDanhMucThuChi' danhMucThuChi.id %}">
+                                        <i class="fas fa-pen-to-square bigger-icon"></i>
+                                    </a>
+                                    <a href="{% url 'xoaDanhMucThuChi' danhMucThuChi.id %}">
+                                        <i class="far fa-trash-alt bigger-icon"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // Auto-close the alert after 3 seconds (3000 milliseconds)
+    setTimeout(() => {
+      document.getElementById('myAlert').remove();
+    }, 3000);
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#dataTable').DataTable({
+            language: {
+                searchPlaceholder: "Tìm kiếm",
+                search: "",
+                "sInfo": "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+                "sInfoEmpty": "Hiển thị 0 đến 0 của 0 mục",
+                "sInfoFiltered": "Lọc từ _MAX_ mục",
+                "sLengthMenu": "Hiện _MENU_ mục",
+                "sEmptyTable": "Không có dữ liệu",
+
+            },
+            stateSave: true,
+            dom: '<"clear"><"row"<"col"l><"col"f>>rt<"row"<"col"i><"col"p>><"row"<"col"B>>',
+            buttons: [
+                {
+                    extend: 'excelHtml5',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4, 5], // Specify the column indices to export
+                        format: {
+                            body: function (data, row, column, node) {
+                                if (column === 1 || column === 2 || column === 3 || column === 4 || column === 5) {
+                                    var checkbox = $(data).find('input[type="checkbox"]');
+                                    if (checkbox.length > 0) {
+                                        return checkbox[0].checked ? 'Có' : 'Không';
+                                    }
+                                }
+                                return data;
+                            }
+                        }
+                    },
+                },
+                {
+                    extend: 'pdf',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4, 5], // Specify the column indices to export
+                        format: {
+                            body: function (data, row, column, node) {
+                                if (column === 1 || column === 2 || column === 3 || column === 4 || column === 5) {
+                                    var checkbox = $(data).find('input[type="checkbox"]');
+                                    if (checkbox.length > 0) {
+                                        return checkbox[0].checked ? 'Có' : 'Không';
+                                    }
+                                }
+                                return data;
+                            }
+                        }
+                    },
+                },
+            ],
+        });
+    });
+
+    $(document).ready(function () {
+        $('.dataTables_filter input[type="search"]').css(
+            { 'width': '350px', 'display': 'inline-block', 'height': '40px' }
+        );
+    });
+</script>
+{% endblock %}

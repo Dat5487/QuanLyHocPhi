@@ -1,0 +1,154 @@
+{% extends "SinhVien/sinhVienBase.html" %}
+{% load static %}
+{% load humanizelib %}
+{% load l10n %}
+{% block title %}Danh sách các khoản thanh toán{% endblock %}
+{% block content %}
+
+
+<style>
+    .bigger-icon {
+        font-size: 1.2em;
+        color: #000;
+    }
+    
+    .bigger-icon a {
+        text-decoration: none;
+    }
+</style>
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <div class="row">
+            <div class="col-12">
+                <h4 class="m-0 font-weight-bold text-primary">Danh sách các khoản thanh toán</h4>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                <th style="width: 250px;">
+                    Năm học
+                </th>
+                <th>
+                    Học kỳ
+                </th>
+                <th>
+                    Tổng số tín chỉ
+                </th>
+                <th>
+                    Tổng số tiền
+                </th>
+                <th>
+                    Trạng thái
+                </th>
+                <th>
+                    Thao tác
+                </th>
+                </thead>
+                <tbody>
+                    {% for khoan in listKhoanThanhToan %}
+                        <tr id="{{ khoan.id }}">
+                            <td>
+                                {{ khoan.namHoc }}
+                            </td>
+                            <td>
+                                {% if khoan.hocKy %}
+                                    Học kỳ 1
+                                {% else %}
+                                    Học kỳ 2
+                                {% endif %}
+                            </td>
+                            <td>{{ khoan.soTinChi }}</td>
+                            <td>{{ khoan.soTien|intcomma|localize }}</td>
+                            <td>                                    
+                                {% if khoan.trangThai == True %}
+                                    <center class="text-success">Đã thanh toán</center>
+                                {% else %}
+                                    <center class="text-danger">Chưa thanh toán</center>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'xemThanhToanHocPhi' khoan.id %}"><button class="btn btn-primary">Xem chi tiết/ Thanh toán</button></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <div class="row">
+            <div class="col-11">
+                <h4 class="m-0 font-weight-bold text-primary">Danh sách khoản thu khác</h4>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered" id="dataTable2" width="100%" cellspacing="0">
+                <thead>
+                    <th>
+                        Mã sinh viên
+                    </th>
+
+                    <th>
+                        Tên khoản
+                    </th>
+                    <th>
+                        Ngày thêm
+                    </th>
+                    <th>
+                        Hạn nộp
+                    </th>
+                    <th>
+                        Số tiền
+                    </th>
+                    <th>
+                        Trạng thái
+                    </th>
+                    <th>
+                        Thao tác
+                    </th>
+                </thead>
+                <tbody>
+                    {% for khoanThu in listThanhToanKhac %}
+                    <tr id="{{ khoanThu.id }}">
+                        <td>{{ khoanThu.sinhVien.maSV }}</td>
+                        <td>{{ khoanThu.khoanThuKhac.tenKhoan }}</td>
+                        <td>{{ khoanThu.ngayThem|date:"d F Y" }}</td>
+                        {% if khoanThu.hanNop == none %}
+                            <td>Không có hạn</td>
+                        {% else %}
+                            <td>{{ khoanThu.hanNop|date:"d F Y" }}</td>
+                        {% endif %}
+                        <td>{{ khoanThu.soTien|intcomma|localize }}</td>
+                        <td>
+                            {% if khoanThu.trangThai == True %}
+                            <center class="text-success">Đã thanh toán</center>
+                            {% else %}
+                            <center class="text-danger">Chưa thanh toán</center>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'xemThanhToanKhac' khoanThu.id %}"><button class="btn btn-primary">Xem chi tiết/ Thanh toán</button></a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    // Auto-close the alert after 3 seconds (3000 milliseconds)
+    setTimeout(() => {
+      document.getElementById('myAlert').remove();
+    }, 3000);
+</script>
+
+{% endblock %}

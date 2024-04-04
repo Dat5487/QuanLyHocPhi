@@ -1,0 +1,204 @@
+{% extends 'TaiChinh/taiChinhBase.html' %}
+{% load static %}
+{% block title %}Thêm thiết lập khoản thu{% endblock %}
+{% block content %}
+
+<div class="card shadow mb-4">
+  <div class="card-header py-3">
+      <h4 class="m-0 font-weight-bold text-primary">Thêm thiết lập khoản thu</h4>
+  </div>
+  <div class="card-body">
+        <form method="POST" action="{% url 'newKhoanThuKhac' %}">
+            {% csrf_token %}
+            <div class="row">
+              <div class="col-6">
+                <div class="form-group mt-2">
+                  <label class="fw-bold  ">Hệ đào tạo</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <img class="custom-image-size" src="{% static 'images/hedaotao.png' %}" alt="Image">
+                      </span>
+                    </div>
+                  <select class="form-control combobox" id="heDaoTao" name="heDaoTao" onchange="handleComboboxChange1()" required>
+                    <option value=""></option>
+                    {% for value in cacHeDaoTao %}
+                        <option value="{{ value.id }}">{{ value.tenHeDaoTao }}</option>
+                    {% endfor %}
+                </select>
+                </div>
+                </div>
+                <div class="form-group mt-2">
+                  <label class="fw-bold  ">Khoa</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <img class="custom-image-size" src="{% static 'images/khoa.png' %}" alt="Image">
+                      </span>
+                    </div>
+                  <select class="form-control combobox" name="khoa" id="khoa" onchange="handleComboboxChange1()">
+                    <option value="">Tất cả các khoa</option>
+                    {% for value in cacKhoa %}
+                        <option value="{{ value.id }}">{{ value.tenKhoa }}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+                </div>
+                <div class="form-group mt-2">
+                  <label class="fw-bold  ">Tên khoản</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <img class="custom-image-size" src="{% static 'images/khoanThu.png' %}" alt="Image">
+                      </span>
+                    </div>
+                  <input class="form-control" name="tenKhoan"></input>
+                  </div>
+                </div>
+
+                <div class="form-group mt-2">
+                  <label class="fw-bold  ">Số tiền</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <img class="custom-image-size" src="{% static 'images/muchocphi.png' %}" alt="Image">
+                      </span>
+                    </div>
+                  <input type="text" class="form-control" name="soTien" id="currency-field" value="" data-type="currency" required>
+                </div>
+                </div>
+
+                <div class="form-group mt-2">
+                  <label class="fw-bold  ">Nội dung</label>
+                  <textarea class="form-control" name="noiDung" rows="3"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-3">Xác nhận</button>
+                <a class="btn btn-danger mt-3" href="{% url 'listKhoanThuKhac' %}">Hủy</a>
+              </div>
+          </div>
+        </form>
+      </div>
+ 
+</div>
+<script>
+  
+$("input[data-type='currency']").on({
+    keyup: function() {
+      formatCurrency($(this));
+    },
+    blur: function() { 
+      formatCurrency($(this), "blur");
+    },
+    
+});
+
+
+function formatNumber(n) {
+  // format number 1000000 to 1,234,567
+  return n.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+}
+
+
+function formatCurrency(input, blur) {
+  // appends $ to value, validates decimal side
+  // and puts cursor back in right position.
+  
+  // get input value
+  var input_val = input.val();
+  
+  // don't validate empty input
+  if (input_val === "") { return; }
+  
+  // original length
+  var original_len = input_val.length;
+
+  // initial caret position 
+  var caret_pos = input.prop("selectionStart");
+    
+  // check for decimal
+  if (input_val.indexOf(".") >= 0) {
+
+    // get position of first decimal
+    // this prevents multiple decimals from
+    // being entered
+    var decimal_pos = input_val.indexOf(".");
+
+    // split number by decimal point
+    var left_side = input_val.substring(0, decimal_pos);
+    var right_side = input_val.substring(decimal_pos);
+
+    // add commas to left side of number
+    left_side = formatNumber(left_side);
+
+    // validate right side
+    right_side = formatNumber(right_side);
+    
+    // On blur make sure 2 numbers after decimal
+    if (blur === "blur") {
+      right_side += "00";
+    }
+    
+    // Limit decimal to only 2 digits
+    right_side = right_side.substring(0, 2);
+
+    // join number by .
+    input_val = left_side + "." + right_side;
+
+  } else {
+    // no decimal entered
+    // add commas to number
+    // remove all non-digits
+    input_val = formatNumber(input_val);
+    input_val = input_val ;
+    
+    // final formatting
+
+  }
+  
+  // send updated string to input
+  input.val(input_val);
+
+  // put caret back in the right position
+  var updated_len = input_val.length;
+  caret_pos = updated_len - original_len + caret_pos;
+  input[0].setSelectionRange(caret_pos, caret_pos);
+}
+
+  function handleComboboxChange1() {
+    var cmbHeDaoTao = document.getElementById('heDaoTao');
+    var cmbNganhDaoTao = document.getElementById('tenNganh');
+    var cmbKhoa = document.getElementById('khoa');
+    var selectedHeDaoTao = cmbHeDaoTao.value;
+    var selectedKhoa = cmbKhoa.value;
+    
+    cmbNganhDaoTao.innerHTML = '';
+    
+    {% for value in cacNganhDaoTao %}
+      if ("{{ value.heDaoTao.tenHeDaoTao }}" == selectedHeDaoTao && "{{ value.khoa.tenKhoa }}" == selectedKhoa) {
+        var newOption = document.createElement('option');
+        newOption.value = "{{ value.tenNganhDaoTao }}";
+        newOption.textContent = "{{ value.tenNganhDaoTao }}";
+        cmbNganhDaoTao.appendChild(newOption);
+      }
+    {% endfor %}
+    var cmbKhoaHoc = document.getElementById('khoaHoc');
+    var cmbLop = document.getElementById('lop');
+    var selectedNganhDaoTao = cmbNganhDaoTao.value;
+    
+    cmbLop.innerHTML = '';
+    
+    console.log(selectedNganhDaoTao);
+    {% for value in cacLop %}
+      if ("{{ value.nganhDaoTao.tenNganhDaoTao }}" == selectedNganhDaoTao) {
+        var newOption = document.createElement('option');
+        newOption.value = "{{ value.lop }}";
+        newOption.textContent = "{{ value.lop }}";
+        cmbLop.appendChild(newOption);
+      }
+    {% endfor %}
+  }
+
+</script>
+
+{% endblock %}

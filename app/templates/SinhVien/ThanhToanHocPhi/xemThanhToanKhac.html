@@ -1,0 +1,67 @@
+{% extends "SinhVien/sinhVienBase.html" %}
+{% load static %}
+{% load humanizelib %}
+{% load l10n %}
+{% block title %}Xem khoản thu{% endblock %}
+{% block content %}
+
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h4 class="m-0 font-weight-bold text-primary">Xem khoản thu</h4>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <dl class="dl-horizontal">
+                <strong>Mã sinh viên</strong> : {{ thanhToanKhac.sinhVien.maSV }}
+            </dl>
+            <dl class="dl-horizontal">
+                <strong>Họ tên</strong> : {{ thanhToanKhac.sinhVien.hoTen }}
+            </dl>
+            <dl class="dl-horizontal">
+                <strong>Khoản thu</strong> : {{ thanhToanKhac.khoanThuKhac.tenKhoan }}
+            </dl>
+            <dl class="dl-horizontal">
+                {% if thanhToanKhac.hanNop == none %}
+                    <strong>Hạn nộp</strong> : Không có hạn
+                {% else %}
+                    <strong>Hạn nộp</strong> : {{ thanhToanKhac.hanNop }}
+                {% endif %}
+            </dl>
+            <dl class="dl-horizontal">
+                <strong>Tổng số tiền</strong> : {{ thanhToanKhac.soTien|intcomma|localize }}
+            </dl>
+            <dl class="dl-horizontal">
+                <dt>
+                    Nội dung thu : 
+                </dt>
+                <dd>
+                    {% if thanhToanKhac.noiDungThu == none %}
+                        Không có nội dung
+                    {% else %}
+                        {{ thanhToanKhac.noiDungThu }}
+                    {% endif %}
+                </dd>
+            </dl>
+        </div>
+        <div class="row">
+            <center>
+
+                {% if thanhToanKhac.trangThai  %}
+                    <button type="submit" class="btn btn-success ms-2 submit" disabled>
+                        <img class="custom-image-size me-1" src="{% static 'images/approved2.png' %}" alt="Icon" class="btn-icon">
+                        Đã thanh toán
+                    </button>
+                {% else %}
+                    <a href="{% url 'taoMaThanhToanKhac' thanhToanKhac.id %}">
+                        <button type="submit" class="btn btn-primary ms-2 submit">
+                            <img class="custom-image-size" src="{% static 'images/vnpay.png' %}" alt="Icon" class="btn-icon">
+                            Thanh toán bằng VNPAY
+                        </button>
+                    </a>
+                {% endif %}
+            </center>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,276 @@
+{% extends 'TaiChinh/taiChinhBase.html' %}
+{% load static %}
+{% load humanizelib %}
+{% load l10n %}
+{% block title %}Báo cáo thu{% endblock %}
+{% block content %}
+<style>
+  .custom-icon-size {
+    font-size: 1.5em;
+    /* Adjust the size as needed */
+  }
+
+  .custom-image-size {
+    width: 1.5em;
+    height: 1.5em;
+    object-fit: cover;
+
+  }
+</style>
+
+<div class="card shadow mb-4">
+  <div class="card-header py-3">
+    <div class="row">
+      <div class="col-9">
+        <h4 class="m-0 font-weight-bold text-primary">Chọn báo cáo</h4>
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    <form method="POST" action="{% url 'chonBaoCao' %}">
+      {% csrf_token %}
+      <div class="row ">
+        <div class="col-2"></div>
+        <div class="col-8" >
+          <div class="form-group mt-2">
+            <div class="row">
+              <div class="col-3 mt-2">
+                <center class="fw-bold fs-5">Loại báo cáo</center>
+              </div>
+              <div class="col-9">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <img class="custom-image-size" src="{% static 'images/report.png' %}" alt="Image">
+                    </span>
+                  </div>
+                  <select class="form-control combobox" name="loaiBaoCao" id="loaiBaoCao" onchange="ChonBaoCao()"
+                    required>
+                    <option value=""></option>
+                    {% for value in cacLoaiBaoCao %}
+                    <option value="{{ value }}">{{ value }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group mt-2">
+            <div class="row">
+              <div class="col-3 mt-2">
+                <center class="fw-bold fs-5">Hệ đào tạo</center>
+              </div>
+              <div class="col-9">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <img class="custom-image-size" src="{% static 'images/hedaotao.png' %}" alt="Image">
+                      <!-- Replace with the path to your image -->
+                    </span>
+                  </div>
+                  <select class="form-control combobox" name="heDaoTao" id="heDaoTao" onchange="handleComboboxChange1()"
+                    required>
+                    <option value=""></option>
+                    {% for value in cacHeDaoTao %}
+                    <option value="{{ value.tenHeDaoTao }}">{{ value.tenHeDaoTao }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group mt-2">
+            <div class="row">
+              <div class="col-3 mt-2">
+                <center class="fw-bold fs-5">Khoa</center>
+              </div>
+              <div class="col-9">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <img class="custom-image-size" src="{% static 'images/khoa.png' %}" alt="Image">
+                      <!-- Replace with the path to your image -->
+                    </span>
+                  </div>
+                  <select class="form-control combobox" name="khoa" id="khoa" onchange="handleComboboxChange1()"
+                    required>
+                    <option value=""></option>
+                    {% for value in cacKhoa %}
+                    <option value="{{ value.tenKhoa }}">{{ value.tenKhoa }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group mt-2">
+            <div class="row">
+              <div class="col-3 mt-2">
+                <center class="fw-bold fs-5">Ngành đào tạo</center>
+              </div>
+              <div class="col-9">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <img class="custom-image-size" src="{% static 'images/nganhdaotao.png' %}" alt="Image">
+                      <!-- Replace with the path to your image -->
+                    </span>
+                  </div>
+                  <select class="form-control combobox" name="tenNganh" id="tenNganh" onchange="handleComboboxChange1()"
+                    required>
+                    <option value=""></option>
+                    {% for value in cacNganhDaoTao %}
+                    <option value="{{ value.tenNganhDaoTao }}">{{ value.tenNganhDaoTao }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group mt-2">
+            <div class="row">
+              <div class="col-3 mt-2">
+                <center class="fw-bold fs-5">Khóa nhập học</center>
+              </div>
+              <div class="col-9">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <img class="custom-image-size" src="{% static 'images/khoahoc.png' %}" alt="Image">
+                    </span>
+                  </div>
+                  <input class="form-control"id="namKhoa" name="namKhoa" value="" onchange="handleComboboxChange1()">
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group mt-2">
+            <div class="row">
+              <div class="col-3 mt-2">
+                <center class="fw-bold fs-5">Lớp</center>
+              </div>
+              <div class="col-9">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <img class="custom-image-size" src="{% static 'images/lop.png' %}" alt="Image">
+                      <!-- Replace with the path to your image -->
+                    </span>
+                  </div>
+                  <select class="form-control combobox" name="lop" id="lop" required>
+                    <option value=""></option>
+                    {% for value in cacLop %}
+                    <option value="{{ value.lop }}">{{ value.lop }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <center><button type="submit" class="btn btn-lg btn-primary mt-5">Xác nhận</button></center>
+        </div>
+    </form>
+  </div>
+</div>
+
+
+<script>
+  function ChonBaoCao(){
+    var selectElement = document.getElementById("loaiBaoCao");
+    var selectedValue = selectElement.value;
+    var cmbLop = document.getElementById('lop');
+    var cmbHeDaoTao = document.getElementById('heDaoTao');
+    var cmbNganhDaoTao = document.getElementById('tenNganh');
+    var cmbKhoa = document.getElementById('khoa');
+    var cmbKhoaHoc = document.getElementById('khoaHoc');
+    var cmbNamHoc = document.getElementById('namHoc');
+    var inputNamKhoa = document.getElementById('namKhoa');
+
+      // Get the input element
+      var inputElement = document.getElementById("myInput");
+
+      // Set the readOnly property based on the selected value
+      if (selectedValue === "Báo cáo học phí tổng hợp") {
+        cmbHeDaoTao.disabled = true;
+        cmbNganhDaoTao.disabled = true;
+        cmbKhoa.disabled = true;
+        inputNamKhoa.disabled = true;
+        cmbLop.disabled = true; 
+        cmbNamHoc.disabled = true;
+      }
+      else if (selectedValue === "Báo cáo học phí tổng hợp theo lớp") {
+        cmbHeDaoTao.disabled = false;
+        cmbNganhDaoTao.disabled = false;
+        cmbKhoa.disabled = false;
+        inputNamKhoa.disabled = false;
+        cmbLop.disabled = false;
+        cmbNamHoc.disabled = true;
+      }
+      else if (selectedValue === "Báo cáo công nợ học phí sinh viên") {
+        cmbHeDaoTao.disabled = true;
+        cmbNganhDaoTao.disabled = true;
+        cmbKhoa.disabled = true;
+        inputNamKhoa.disabled = true;
+        cmbLop.disabled = true;
+        cmbNamHoc.disabled = true;
+      }
+      else if (selectedValue === "Báo cáo công nợ học phí sinh viên theo lớp") {
+        cmbHeDaoTao.disabled = false;
+        cmbNganhDaoTao.disabled = false;
+        cmbKhoa.disabled = false;
+        inputNamKhoa.disabled = false;
+        cmbLop.disabled = false;
+        cmbNamHoc.disabled = true;
+      }
+      else {
+        cmbHeDaoTao.disabled = false;
+        cmbNganhDaoTao.disabled = false;
+        cmbKhoa.disabled = false;
+        inputNamKhoa.disabled = false;
+        cmbLop.disabled = false;
+        cmbNamHoc.disabled = false;
+      }
+  }
+  function handleComboboxChange1() {
+    var cmbHeDaoTao = document.getElementById('heDaoTao');
+    var cmbNganhDaoTao = document.getElementById('tenNganh');
+    var cmbKhoa = document.getElementById('khoa');
+    var inputNamKhoa = document.getElementById('namKhoa');
+    var cmbNamHoc = document.getElementById('namHoc');
+    var cmbLop = document.getElementById('lop');
+    var selectedHeDaoTao = cmbHeDaoTao.value;
+    var selectedKhoa = cmbKhoa.value;
+    
+    cmbNganhDaoTao.innerHTML = '';
+    
+    {% for value in cacNganhDaoTao %}
+      if ("{{ value.heDaoTao.tenHeDaoTao }}" == selectedHeDaoTao && "{{ value.khoa.tenKhoa }}" == selectedKhoa) {
+        var newOption = document.createElement('option');
+        newOption.value = "{{ value.tenNganhDaoTao }}";
+        newOption.textContent = "{{ value.tenNganhDaoTao }}";
+        cmbNganhDaoTao.appendChild(newOption);
+      }
+    {% endfor %}
+    
+    var selectedNganhDaoTao = cmbNganhDaoTao.value;
+    var selectedNamKhoa = inputNamKhoa.value;
+    cmbLop.innerHTML = '';
+    
+    {% for value in cacLop %}
+      console.log("{{ value.nganhDaoTao.tenNganhDaoTao }}");
+      console.log(selectedNganhDaoTao);
+      console.log("-");
+      if ("{{ value.nganhDaoTao.tenNganhDaoTao }}" == selectedNganhDaoTao && "{{ value.namKhoa }}" == selectedNamKhoa) {
+        var newOption = document.createElement('option');
+        newOption.value = "{{ value.id }}";
+        newOption.textContent = "{{ value.lop }}";
+        cmbLop.appendChild(newOption);
+      }
+    {% endfor %}
+  }
+
+</script>
+{% endblock %}

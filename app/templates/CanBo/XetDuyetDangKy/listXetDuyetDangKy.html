@@ -1,0 +1,139 @@
+{% extends "CanBo/canBoBase.html" %}
+{% load static %}
+{% load humanizelib %}
+{% load l10n %}
+{% block title %}Danh sách học phần cần xét duyệt{% endblock %}
+{% block content %}
+
+
+<style>
+    .bigger-icon {
+        font-size: 1.2em;
+        color: #000;
+    }
+    
+    .bigger-icon a {
+        text-decoration: none;
+    }
+</style>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <div class="row">
+                <div class="col-9">
+                    <h4 class="m-0 font-weight-bold text-primary">Danh sách học phần cần xét duyệt</h4>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if alertContent == "Xét duyệt" %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <strong>Xét duyệt thành công!</strong>
+              </div>
+            {% endif %}
+            {% if alertContent == "Hủy" %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert" id="myAlert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <strong>Đã hủy đăng ký cho sinh viên</strong>
+              </div>
+            {% endif %}
+            <div class="table-responsive mt-3">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                    <th>
+                        Mã sinh viên
+                    </th>
+                    <th>
+                        Tên sinh viên
+                    </th>
+                    <th>
+                        Hệ đào tạo
+                    </th>
+                    <th>
+                        Ngành đào tạo
+                    </th>
+                    <th>
+                        Lớp hành chính
+                    </th>
+                    <th>
+                        Năm học
+                    </th>
+                    <th>
+                        Học kỳ
+                    </th>
+                    <th>
+                        Thao tác
+                    </th>
+                    </thead>
+                    <tbody>
+                        {% for thietLap in listXetDuyet %}
+                            <tr id="{{ thietLap.id }}">
+                                <td>{{ thietLap.sinhVien.maSV }}</td>
+                                <td>{{ thietLap.sinhVien.hoTen }}</td>
+                                <td>{{ thietLap.sinhVien.lop.nganhDaoTao.heDaoTao.tenHeDaoTao }}</td>
+                                <td>{{ thietLap.sinhVien.lop.nganhDaoTao.tenNganhDaoTao }}</td>
+                                <td>{{ thietLap.sinhVien.lop.lop }}</td>
+                                <td>{{ thietLap.namHoc.namHoc }}</td>
+                                <td>
+                                    {% if thietLap.hocKy %}
+                                        <center>Học kỳ 1</center>
+                                    {% else %}
+                                        <center>Học kỳ 2</center>
+                                    {% endif %}
+                                </td>
+                                <td style="text-align: center;">
+                                    <a href="{% url 'xetDuyetDangKy' thietLap.id %}">
+                                        <button class="btn btn-primary">Xét duyệt</button>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+<script>
+    // Auto-close the alert after 3 seconds (3000 milliseconds)
+    setTimeout(() => {
+      document.getElementById('myAlert').remove();
+    }, 3000);
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#dataTable').DataTable({
+            language: {
+                searchPlaceholder: "Tìm kiếm",
+                search: "",
+                "sInfo": "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+                "sInfoEmpty": "Hiển thị 0 đến 0 của 0 mục",
+                "sInfoFiltered": "Lọc từ _MAX_ mục",
+                "sLengthMenu": "Hiện _MENU_ mục",
+                "sEmptyTable": "Không có dữ liệu",
+
+            },
+            stateSave: true,
+            dom: '<"clear"><"row"<"col"l><"col"f>>rt<"row"<"col"i><"col"p>><"row"<"col"B>>',
+            buttons: [
+                {
+                    extend: 'excel',
+                    exportOptions: {
+                        columns: ':not(:last-child)',
+                    }, title: ''
+                }, {
+                    extend: 'pdf',
+                    exportOptions: {
+                        columns: ':not(:last-child)',
+                    }, title: ''
+                }
+            ]
+        });
+    });
+
+    $(document).ready(function () {
+        $('.dataTables_filter input[type="search"]').css(
+            { 'width': '350px', 'display': 'inline-block', 'height': '40px' }
+        );
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends 'TaiChinh/taiChinhBase.html' %}
+{% load static %}
+{% block title %}Xác nhận xóa mục học phí{% endblock %}
+{% block content %}
+
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h4 class="m-0 font-weight-bold text-primary">Xác nhận xóa mục học phí</h4>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <dl class="dl-horizontal">
+                <dt>
+                    Tên khoản
+                </dt>
+                <dd>
+                    {{ danhMucThuChi.tenKhoan }}
+                </dd>
+            </dl>
+
+            <dl class="dl-horizontal">
+                <dt>
+                    Loại khoản
+                </dt>
+                <dd>
+                    {% if danhMucThuChi.isKhoanThu == True %}
+                        <p>Khoản thu</p>
+                    {% else %}
+                        <p>Khoản chi</p>
+                    {% endif %}
+                </dd>
+            </dl>
+            <dl class="dl-horizontal">
+                <dt>
+                    Khoản thu nhập học
+                </dt>
+                <dd>
+                    {% if danhMucThuChi.isKhoanThuNhapHoc == True %}
+                        <p>Có</p>
+                    {% else %}
+                        <p>Không</p>
+                    {% endif %}
+                </dd>
+            </dl>
+            <dl class="dl-horizontal">
+                <dt>
+                    Học phí
+                </dt>
+                <dd>
+                    {% if danhMucThuChi.isHocPhi == True %}
+                        <p>Có</p>
+                    {% else %}
+                        <p>Không</p>
+                    {% endif %}
+                </dd>
+            </dl>
+            <dl class="dl-horizontal">
+                <dt>
+                    Thu trực tuyến
+                </dt>
+                <dd>
+                    {% if danhMucThuChi.isThuTrucTuyen == True %}
+                        <p>Có</p>
+                    {% else %}
+                        <p>Không</p>
+                    {% endif %}
+                </dd>
+            </dl>
+            <div class="form-group">
+                <div class="col-md-offset-2 ">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="submit" value="Xóa" class="btn btn-primary" />
+                        <a class="btn btn-danger" href="##" onClick="history.go(-1); return false;">Hủy</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>{% endblock %}

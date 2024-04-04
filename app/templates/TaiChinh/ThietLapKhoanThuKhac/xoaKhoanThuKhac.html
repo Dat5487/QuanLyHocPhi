@@ -1,0 +1,68 @@
+{% extends 'TaiChinh/taiChinhBase.html' %}
+{% load static %}
+{% block title %}Xác nhận xóa thiết lập khoản thu{% endblock %}
+{% block content %}
+
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h4 class="m-0 font-weight-bold text-primary">Xác nhận xóa thiết lập khoản thu</h4>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <dl class="dl-horizontal">
+                <dt>
+                    Hệ đào tạo
+                </dt>
+                <dd>
+                    {{ khoanThuKhac.heDaoTao.tenHeDaoTao }}
+                </dd>
+            </dl>
+            <dl class="dl-horizontal">
+                <dt>
+                    Khoa
+                </dt>
+                <dd>
+                    {% if khoanThu.khoa == None %}
+                        Tất cả các khoa
+                    {% else %}
+                        {{ khoanThuKhac.khoa.tenKhoa }}
+                    {% endif %}
+                </dd>
+            </dl>
+            <dl class="dl-horizontal">
+                <dt>
+                    Tên khoản
+                </dt>
+                <dd>
+                    {{ khoanThuKhac.tenKhoan }}
+                </dd>
+            </dl>
+            <dl class="dl-horizontal">
+                <dt>
+                    Nội dung
+                </dt>
+                <dd>
+                    {{ khoanThuKhac.noiDung }}
+                </dd>
+            </dl>
+            <dl class="dl-horizontal">
+                <dt>
+                    Số tiền
+                </dt>
+                <dd>
+                    {{ soTien }}
+                </dd>
+            </dl>
+            <div class="form-group">
+                <div class="col-md-offset-2 ">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="submit" value="Xóa" class="btn btn-primary" />
+                        <a class="btn btn-danger" href="{% url 'listKhoanThuKhac' %}">Hủy</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>{% endblock %}

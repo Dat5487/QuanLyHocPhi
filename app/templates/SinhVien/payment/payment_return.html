@@ -1,0 +1,42 @@
+{% extends "SinhVien/sinhVienBase.html" %}
+{% load static %}
+{% block content %}
+    <div class="panel panel-default mt-5 ms-5">
+        <div class="panel-body">
+            <div class="form-group mt-2">
+                <label class="fw-bold  ">{{ title }} : </label>
+                <label id="">{{ result }}</label>
+            </div>
+            <div class="form-group mt-2">
+                <label class="fw-bold  ">Mã thanh toán : </label>
+                <label id="">{{ order_id }}</label>
+            </div>
+            <div class="form-group mt-2">
+                <label class="fw-bold  ">Số tiền: </label>
+                <label id="">{{ amount }}</label>
+            </div>
+            <div class="form-group mt-2">
+                <label class="fw-bold  ">Nội dung: </label>
+                <label id="">{{ order_desc }}</label>
+            </div>
+            <div class="form-group mt-2">
+                <label class="fw-bold  ">Số giao dịch: </label>
+                <label id="">{{ vnp_TransactionNo }}</label>
+            </div>
+            {% if vnp_ResponseCode == '00' %}
+                <div class="form-group mt-2">
+                    <label class="fw-bold  ">Kết quả: </label>
+                    <label id="">{{ vnp_ResponseCode }} - Thành công</label>
+                </div>
+            {% else %}
+                <div class="form-group mt-2">
+                    <label class="fw-bold  ">Kết quả: </label>
+                    <label id="">{{ vnp_ResponseCode }} - Lỗi</label>
+                </div>
+            {% endif %}
+            {% if msg %}
+                <p class="alert-warning"> {{ msg }}</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

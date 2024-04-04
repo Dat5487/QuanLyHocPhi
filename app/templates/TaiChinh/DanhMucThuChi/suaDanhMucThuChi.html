@@ -1,0 +1,122 @@
+{% extends 'TaiChinh/taiChinhBase.html' %}
+{% load static %}
+{% block title %}Sửa danh mục thu chi{% endblock %}
+{% block content %}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h4 class="m-0 font-weight-bold text-primary">Sửa danh mục thu chi</h4>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{% url 'suaDanhMucThuChi' danhMucThuChi.id %}">
+            {% csrf_token %}
+            <div class="form-group mt-2">
+                <label class="fw-bold  ">Tên khoản</label>
+                <div class="row">
+                    <div class="col-6">
+                        <input class="form-control" name="tenKhoan" value="{{ danhMucThuChi.tenKhoan }}" required>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group mt-2">
+                <label class="fw-bold  ">Loại khoản</label>
+                <br />
+                {% if danhMucThuChi.isKhoanThu == True %}
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="loaiKhoan" id="khoanThu" value="1" checked>
+                    <label class="form-check-label" for="khoanThu">Khoản thu</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="loaiKhoan" id="khoanChi" value="0">
+                    <label class="form-check-label" for="khoanChi">Khoản chi</label>
+                </div>
+                {% else %}
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="loaiKhoan" id="khoanThu" value="1">
+                    <label class="form-check-label" for="khoanThu">Khoản thu</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="loaiKhoan" id="khoanChi" value="0" checked>
+                    <label class="form-check-label" for="khoanChi">Khoản chi</label>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group mt-2">
+                <label class="fw-bold  ">Khoản thu nhập học</label>
+                <br />
+                {% if danhMucThuChi.isKhoanThuNhapHoc == True %}
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="isKhoanThuNhapHoc" id="isNhapHoc1" value="1"
+                        checked>
+                    <label class="form-check-label" for="isNhapHoc1">Có</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="isKhoanThuNhapHoc" id="isNhapHoc2" value="0">
+                    <label class="form-check-label" for="isNhapHoc2">Không</label>
+                </div>
+                {% else %}
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="isKhoanThuNhapHoc" id="isNhapHoc1" value="1">
+                    <label class="form-check-label" for="isNhapHoc1">Có</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="isKhoanThuNhapHoc" id="isNhapHoc2" value="0"
+                        checked>
+                    <label class="form-check-label" for="isNhapHoc2">Không</label>
+                </div>
+                {%  endif %}
+            </div>
+            <div class="form-group mt-2">
+                <label class="fw-bold  ">Loại Học phí</label>
+                <br />
+                {% if danhMucThuChi.isHocPhi == True %}
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="isHocPhi" id="hocPhi1" value="1" checked>
+                    <label class="form-check-label" for="hocPhi1">Học phí</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="isHocPhi" id="hocPhi2" value="0">
+                    <label class="form-check-label" for="hocPhi2">Ngoài học phí</label>
+                </div>
+                {% else %}
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="isHocPhi" id="hocPhi1" value="1">
+                    <label class="form-check-label" for="hocPhi1">Học phí</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="isHocPhi" id="hocPhi2" value="0" checked>
+                    <label class="form-check-label" for="hocPhi2">Ngoài học phí</label>
+                </div>
+                {% endif %}
+            </div>
+            <div class="form-group mt-2">
+                <label class="fw-bold  ">Thu trực tuyến</label>
+                <br />
+                {% if danhMucThuChi.isThuTrucTuyen == True %}
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="isThuTrucTuyen" id="thuTrucTuyen1" value="1" checked>
+                    <label class="form-check-label" for="thuTrucTuyen1">Có</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="isThuTrucTuyen" id="thuTrucTuyen2" value="0">
+                    <label class="form-check-label" for="thuTrucTuyen2">Không</label>
+                </div>
+                {% else %}
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="isThuTrucTuyen" id="thuTrucTuyen1" value="1">
+                    <label class="form-check-label" for="thuTrucTuyen1">Có</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="isThuTrucTuyen" id="thuTrucTuyen2" value="0" checked>
+                    <label class="form-check-label" for="thuTrucTuyen2">Không</label>
+                </div>
+                {% endif %}
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Xác nhận</button>
+            <a class="btn btn-danger mt-3" href="##" onClick="history.go(-1); return false;">Hủy</a>
+
+        </form>
+    </div>
+</div>
+{% endblock %}

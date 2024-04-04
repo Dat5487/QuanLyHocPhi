@@ -1,0 +1,48 @@
+{% extends "CanBo/canBoBase.html" %}
+{% load static %}
+{% load humanizelib %}
+{% load l10n %}
+{% block title %}Xác nhận xóa thiết lập đăng ký{% endblock %}
+{% block content %}
+
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h4 class="m-0 font-weight-bold text-primary">Xác nhận xóa thiết lập đăng ký</h4>
+    </div>
+    <div class="card-body">
+        <dl class="dl-horizontal">
+            <strong>Tên ngành: </strong> : {{ thietLapDangKy.nganhDaoTao.tenNganhDaoTao }}
+          </dl>
+          <dl class="dl-horizontal">
+            <strong>Khóa: </strong> : {{ thietLapDangKy.namKhoa }}
+          </dl>
+          <dl class="dl-horizontal">
+            <strong>Năm học: </strong> : {{ thietLapDangKy.namHoc.namHoc }}
+          </dl>
+          <dl class="dl-horizontal">
+            {% if thietLapDangKy.hocKy == True  %}
+              <strong>Học kỳ: </strong> : 1
+            {% else %}
+              <strong>Học kỳ: </strong> : 2
+            {% endif %}
+          </dl>
+          <div class="row mt-3">
+            <label><strong>Tổng số tín chỉ :	</strong><label id="tongSoTin">{{ tongSoTin }}</label></label>
+            </div>
+            <div class="row mt-3">
+                <label><strong>Tổng số tiền :	</strong><label id="tongSoTien">{{ tongSoTien|intcomma|localize }}</label></label>
+            </div>
+        <div class="table-responsive">
+            <div class="form-group">
+                <div class="col-md-offset-2 ">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="submit" value="Xóa" class="btn btn-primary mt-3" />
+                        <a class="btn btn-danger mt-3" href="{% url 'listThietLapDangKy' %}">Hủy</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>{% endblock %}
