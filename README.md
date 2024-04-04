@@ -1,4 +1,6 @@
 Một số giao diện web
+![image](https://github.com/Dat5487/QuanLyHocPhi/assets/109160535/24e71763-976f-4bd0-8c5d-ae302521b1af)
+
 
 Giao diện cán bộ quản lý học phần:
 ![image](https://github.com/Dat5487/QuanLyHocPhi/assets/109160535/098379ea-1886-4a5c-b00b-860644a4b71b)
