@@ -2,52 +2,52 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 class HeDaoTao(models.Model):
-    tenHeDaoTao = models.CharField(max_length=100)
+    tenHeDaoTao = models.CharField(max_length=50)
 
 # Khóa nhập học
 class KhoaHoc(models.Model):
-    namKhoaHoc = models.CharField(max_length=100)
+    namKhoaHoc = models.CharField(max_length=10)
 
 # Năm học
 class NamHoc(models.Model):
-    namHoc = models.CharField(max_length=100)
+    namHoc = models.CharField(max_length=10)
 
 class Khoa(models.Model):
-    tenKhoa = models.CharField(max_length=100)
+    tenKhoa = models.CharField(max_length=50)
     
 class NganhDaoTao(models.Model):
-    khoa = models.ForeignKey(Khoa, on_delete = models.CASCADE)
-    heDaoTao = models.ForeignKey(HeDaoTao, on_delete = models.CASCADE)
-    tenNganhDaoTao = models.CharField(max_length=100)
+    khoa = models.ForeignKey(Khoa, on_delete = models.PROTECT)
+    heDaoTao = models.ForeignKey(HeDaoTao, on_delete = models.PROTECT)
+    tenNganhDaoTao = models.CharField(max_length=50)
 
 class Lop(models.Model):
-    heDaoTao = models.ForeignKey(HeDaoTao, on_delete = models.CASCADE)
-    nganhDaoTao = models.ForeignKey(NganhDaoTao, on_delete = models.CASCADE)
-    khoaHoc = models.ForeignKey(KhoaHoc, on_delete = models.CASCADE)
-    khoa = models.ForeignKey(Khoa, on_delete = models.CASCADE)
-    lop = models.CharField(max_length=100)
+    heDaoTao = models.ForeignKey(HeDaoTao, on_delete = models.PROTECT)
+    nganhDaoTao = models.ForeignKey(NganhDaoTao, on_delete = models.PROTECT)
+    khoa = models.ForeignKey(Khoa, on_delete = models.PROTECT)
+    lop = models.CharField(max_length=50)
     namKhoa = models.IntegerField()
 
     
 class SinhVien(models.Model):
     maSV = models.CharField(max_length=10)
-    hoTen = models.CharField(max_length=100)
+    hoTen = models.CharField(max_length=50)
+    gioiTinh = models.CharField(max_length=5,null=True)
     ngaySinh = models.DateField(blank=True, null=True)
-    queQuan = models.CharField(max_length=100)
-    lop = models.ForeignKey(Lop, on_delete = models.CASCADE)
+    queQuan = models.CharField(max_length=50)
+    lop = models.ForeignKey(Lop, on_delete = models.PROTECT)
     trangThai = models.BooleanField(blank=True)
     namKhoa = models.IntegerField()
     
 class KhoanThuKhac(models.Model):
-    heDaoTao = models.ForeignKey(HeDaoTao, on_delete = models.CASCADE, blank=True, null=True)
-    khoa = models.ForeignKey(Khoa, on_delete = models.CASCADE, blank=True, null=True)
+    heDaoTao = models.ForeignKey(HeDaoTao, on_delete = models.PROTECT, blank=True, null=True)
+    khoa = models.ForeignKey(Khoa, on_delete = models.PROTECT, blank=True, null=True)
     tenKhoan = models.CharField(max_length=100)
     soTien = models.BigIntegerField()
     noiDung = models.TextField(blank=True, null=True)
 
 class ThanhToanKhoanThuKhac(models.Model):
-    khoanThuKhac = models.ForeignKey(KhoanThuKhac, on_delete = models.CASCADE)
-    sinhVien = models.ForeignKey(SinhVien, on_delete = models.CASCADE)
+    khoanThuKhac = models.ForeignKey(KhoanThuKhac, on_delete = models.PROTECT)
+    sinhVien = models.ForeignKey(SinhVien, on_delete = models.PROTECT)
     trangThai = models.BooleanField(blank=True, null=True)
     hanNop = models.DateField(blank=True, null=True)
     noiDungThu = models.CharField(max_length=100,blank=True, null=True)
@@ -55,9 +55,9 @@ class ThanhToanKhoanThuKhac(models.Model):
     ngayThem = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
 class KeHoachThu(models.Model):
-    khoaHoc = models.ForeignKey(KhoaHoc, on_delete = models.CASCADE)
+    khoaHoc = models.ForeignKey(KhoaHoc, on_delete = models.PROTECT)
     dotThu = models.IntegerField()
-    nganhDaoTao = models.ForeignKey(NganhDaoTao, on_delete = models.CASCADE)
+    nganhDaoTao = models.ForeignKey(NganhDaoTao, on_delete = models.PROTECT)
     khoanThu = models.CharField(max_length=100)
     trangThai = models.BooleanField(blank=True, null=True)
     soTien = models.BigIntegerField()
@@ -100,31 +100,32 @@ class HocPhan(models.Model):
     tenHocPhan = models.TextField()
     soTinChi = models.IntegerField()
     soTien = models.IntegerField()
-
+    heDaoTao = models.ForeignKey(HeDaoTao, on_delete = models.PROTECT, null=True)
+    nganhDaoTao = models.ForeignKey(NganhDaoTao, on_delete = models.PROTECT, blank=True, null=True)
 
 class HocPhanChoDangKy(models.Model):
     hocPhan = models.ManyToManyField(HocPhan)
-    namHoc = models.ForeignKey(NamHoc, on_delete = models.CASCADE)
+    namHoc = models.ForeignKey(NamHoc, on_delete = models.PROTECT)
     namKhoa = models.IntegerField()
     hocKy = models.BooleanField(blank=True)
-    nganhDaoTao = models.ForeignKey(NganhDaoTao, on_delete = models.CASCADE)
+    nganhDaoTao = models.ForeignKey(NganhDaoTao, on_delete = models.PROTECT)
     trangThai = models.BooleanField(blank=True)
 
 class HocPhanDaDangKy(models.Model):
-    hocPhanChoDangKy = models.ForeignKey(HocPhanChoDangKy, on_delete = models.CASCADE)
+    hocPhanChoDangKy = models.ForeignKey(HocPhanChoDangKy, on_delete = models.PROTECT)
     hocPhan = models.ManyToManyField(HocPhan)
-    sinhVien = models.ForeignKey(SinhVien, on_delete = models.CASCADE)
-    namHoc = models.ForeignKey(NamHoc, on_delete = models.CASCADE)
+    sinhVien = models.ForeignKey(SinhVien, on_delete = models.PROTECT)
+    namHoc = models.ForeignKey(NamHoc, on_delete = models.PROTECT)
     namKhoa = models.IntegerField()
     hocKy = models.BooleanField(blank=True)
     trangThai = models.BooleanField(blank=True)
 
 class HocPhanDuocXetDuyet(models.Model):
-    hocPhanDaDangKy = models.ForeignKey(HocPhanDaDangKy, on_delete = models.CASCADE)
+    hocPhanDaDangKy = models.ForeignKey(HocPhanDaDangKy, on_delete = models.PROTECT)
 
 class ThanhToanHocPhi(models.Model):
-    hocPhanDuocXetDuyet = models.ForeignKey(HocPhanDuocXetDuyet, on_delete = models.CASCADE)
-    sinhVien = models.ForeignKey(SinhVien, on_delete = models.CASCADE)
+    hocPhanDuocXetDuyet = models.ForeignKey(HocPhanDuocXetDuyet, on_delete = models.PROTECT)
+    sinhVien = models.ForeignKey(SinhVien, on_delete = models.PROTECT)
     soTien = models.BigIntegerField()
     soTinChi = models.IntegerField()
     trangThai = models.BooleanField(blank=True)

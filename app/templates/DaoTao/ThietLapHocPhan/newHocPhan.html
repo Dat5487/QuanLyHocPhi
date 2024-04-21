@@ -1,0 +1,211 @@
+{% extends "DaoTao/daoTaoBase.html" %}
+{% load static %}
+{% block title %}Thêm thiết lập học phần{% endblock %}
+{% block content %}
+
+<div class="card shadow mb-4">
+  <div class="card-header py-3">
+      <h4 class="m-0 font-weight-bold text-primary">Thêm thiết lập học phần</h4>
+  </div>
+  <div class="card-body">
+        <form method="POST" action="{% url 'newHocPhan' %}">
+            {% csrf_token %}
+            <div class="row">
+              <div class="col-6">
+                <div class="form-group mt-2">
+                  <label class="fw-bold  ">Hệ đào tạo</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <img class="custom-image-size" src="{% static 'images/hedaotao.png' %}" alt="Image">
+                      </span>
+                    </div>
+                  <select class="form-control combobox" id="heDaoTao" name="heDaoTao" onchange="FilterComboBox()" required>
+                    <option value=""></option>
+                    {% for value in cacHeDaoTao %}
+                        <option value="{{ value.id }}">{{ value.tenHeDaoTao }}</option>
+                    {% endfor %}
+                </select>
+                </div>
+                </div>
+                <div class="row">
+                    <div class="form-group mt-2">
+                      <label class="fw-bold  ">Loại môn học</label>
+                      <br />
+                      <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" name="loaiMonHoc" id="loaiMonHoc1" value="1" onchange="onSelectDaiCuong()">
+                          <label class="form-check-label" for="loaiMonHoc1">Đại cương</label>
+                      </div>
+                      <div class="form-check form-check-inline">
+                          <input class="form-check-input" type="radio" name="loaiMonHoc" id="loaiMonHoc2" value="0" onchange="onSelectChuyenNganh()" checked>
+                          <label class="form-check-label" for="loaiMonHoc2">Chuyên ngành</label>
+                      </div>
+                    </div>
+                </div>
+                <div class="form-group mt-2">
+                  <label class="fw-bold  ">Khoa</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <img class="custom-image-size" src="{% static 'images/khoa.png' %}" alt="Image">
+                      </span>
+                    </div>
+                  <select class="form-control combobox" name="khoa" id="khoa" onchange="FilterComboBox()">
+                    <option value=""></option>
+                    {% for value in cacKhoa %}
+                    <option value="{{ value.tenKhoa }}">{{ value.tenKhoa }}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+                </div>
+                <div class="form-group mt-2">
+                  <label class="fw-bold  ">Ngành đào tạo</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <img class="custom-image-size" src="{% static 'images/nganhDaoTao.png' %}" alt="Image">
+                      </span>
+                    </div>
+                  <select class="form-control combobox" name="nganhDaoTao" id="nganhDaoTao">
+
+                  </select>
+                </div>
+                </div>
+
+                <div class="form-group mt-2">
+                  <label class="fw-bold  ">Mã học phần</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <img class="custom-image-size" src="{% static 'images/register.png' %}" alt="Image">
+                      </span>
+                    </div>
+                  <input class="form-control" name="maHocPhan" required></input>
+                  </div>
+                </div>
+                <div class="form-group mt-2">
+                  <label class="fw-bold  ">Tên học phần</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <img class="custom-image-size" src="{% static 'images/report.png' %}" alt="Image">
+                      </span>
+                    </div>
+                  <input class="form-control" name="tenHocPhan" required></input>
+                  </div>
+                </div>
+
+                <div class="form-group mt-2">
+                  <label class="fw-bold  ">Số tín chỉ</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <img class="custom-image-size" src="{% static 'images/heso.png' %}" alt="Image">
+                      </span>
+                    </div>
+                  <input class="form-control" name="soTinChi" type="number" required>
+                </div>
+                </div>
+
+                <div class="form-group mt-2">
+                  <label class="fw-bold  ">Số tiền</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <img class="custom-image-size" src="{% static 'images/sotien.png' %}" alt="Image">
+                      </span>
+                    </div>
+                  <input type="text" class="form-control" name="soTien" id="currency-field" value="" data-type="currency" required>
+                </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-3">Xác nhận</button>
+                <a class="btn btn-danger mt-3" href="{% url 'listHocPhan' %}">Hủy</a>
+              </div>
+          </div>
+        </form>
+      </div>
+ 
+</div>
+<script>
+  
+$("input[data-type='currency']").on({
+    keyup: function() {
+      formatCurrency($(this));
+    },
+    blur: function() { 
+      formatCurrency($(this), "blur");
+    },
+    
+});
+
+
+function formatNumber(n) {
+  // format number 1000000 to 1,234,567
+  return n.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+}
+
+
+function formatCurrency(input, blur) {
+  var input_val = input.val();
+  if (input_val === "") { return; }
+  var original_len = input_val.length;
+  var caret_pos = input.prop("selectionStart");
+  if (input_val.indexOf(".") >= 0) {
+    var decimal_pos = input_val.indexOf(".");
+    var left_side = input_val.substring(0, decimal_pos);
+    var right_side = input_val.substring(decimal_pos);
+    left_side = formatNumber(left_side);
+    right_side = formatNumber(right_side);
+    
+    if (blur === "blur") {
+      right_side += "00";
+    }
+    right_side = right_side.substring(0, 2);
+    input_val = left_side + "." + right_side;
+  } else {
+    input_val = formatNumber(input_val);
+    input_val = input_val ;
+  }
+  input.val(input_val);
+  var updated_len = input_val.length;
+  caret_pos = updated_len - original_len + caret_pos;
+  input[0].setSelectionRange(caret_pos, caret_pos);
+}
+
+function FilterComboBox() {
+    var cmbHeDaoTao = document.getElementById('heDaoTao');
+    var cmbNganhDaoTao = document.getElementById('nganhDaoTao');
+    var cmbKhoa = document.getElementById('khoa');
+    var selectedHeDaoTao = cmbHeDaoTao.value;
+    var selectedKhoa = cmbKhoa.value;
+    
+    cmbNganhDaoTao.innerHTML = '';
+
+    {% for value in cacNganhDaoTao %}
+      if ("{{ value.heDaoTao.id }}" == selectedHeDaoTao && "{{ value.khoa.tenKhoa }}" == selectedKhoa) {
+        var newOption = document.createElement('option');
+        newOption.value = "{{ value.id }}";
+        newOption.textContent = "{{ value.tenNganhDaoTao }}";
+        cmbNganhDaoTao.appendChild(newOption);
+      }
+    {% endfor %}
+}
+function onSelectDaiCuong(){
+    var cmbNganhDaoTao = document.getElementById('nganhDaoTao');
+    var cmbKhoa = document.getElementById('khoa');
+    cmbNganhDaoTao.disabled = true;
+    cmbKhoa.disabled = true;
+    cmbNganhDaoTao.selectedIndex = 0;
+    cmbKhoa.selectedIndex = 0;
+}
+function onSelectChuyenNganh(){
+    var cmbNganhDaoTao = document.getElementById('nganhDaoTao');
+    var cmbKhoa = document.getElementById('khoa');
+    cmbNganhDaoTao.disabled = false;
+    cmbKhoa.disabled = false;
+}
+
+</script>
+
+{% endblock %}

@@ -20,13 +20,13 @@
     <div class="card-header py-3">
         <div class="row">
             <div class="col-12">
-                <h4 class="m-0 font-weight-bold text-primary">Danh sách các khoản thanh toán</h4>
+                <h4 class="m-0 font-weight-bold text-primary">Danh sách các khoản thu học phí</h4>
             </div>
         </div>
     </div>
     <div class="card-body">
         <div class="table-responsive mt-3">
-            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+            <table class="table table-bordered" id="dataTable1" width="100%" cellspacing="0">
                 <thead>
                 <th style="width: 250px;">
                     Năm học
@@ -84,7 +84,7 @@
     <div class="card-header py-3">
         <div class="row">
             <div class="col-11">
-                <h4 class="m-0 font-weight-bold text-primary">Danh sách khoản thu khác</h4>
+                <h4 class="m-0 font-weight-bold text-primary">Danh sách các khoản thu khác</h4>
             </div>
         </div>
     </div>
@@ -150,5 +150,46 @@
       document.getElementById('myAlert').remove();
     }, 3000);
 </script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#dataTable1').DataTable({
+            language: {
+                searchPlaceholder: "Tìm kiếm",
+                search: "",
+                "sInfo": "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+                "sInfoEmpty": "Hiển thị 0 đến 0 của 0 mục",
+                "sInfoFiltered": "Lọc từ _MAX_ mục",
+                "sLengthMenu": "Hiện _MENU_ mục",
+                "sEmptyTable": "Không có dữ liệu",
 
+            },
+            stateSave: true,
+            dom: '<"clear"><"row"<"col"l><"col"f>>rt<"row"<"col"i><"col"p>><"row"<"col"B>>',
+            buttons: [
+            ]
+        }),
+        $('#dataTable2').DataTable({
+            language: {
+                searchPlaceholder: "Tìm kiếm",
+                search: "",
+                "sInfo": "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+                "sInfoEmpty": "Hiển thị 0 đến 0 của 0 mục",
+                "sInfoFiltered": "Lọc từ _MAX_ mục",
+                "sLengthMenu": "Hiện _MENU_ mục",
+                "sEmptyTable": "Không có dữ liệu",
+
+            },
+            stateSave: true,
+            dom: '<"clear"><"row"<"col"l><"col"f>>rt<"row"<"col"i><"col"p>><"row"<"col"B>>',
+            buttons: [
+            ]
+        });
+    });
+
+    $(document).ready(function () {
+        $('.dataTables_filter input[type="search"]').css(
+            { 'width': '350px', 'display': 'inline-block', 'height': '40px' }
+        );
+    });
+</script>
 {% endblock %}

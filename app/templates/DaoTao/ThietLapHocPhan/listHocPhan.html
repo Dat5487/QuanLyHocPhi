@@ -1,0 +1,359 @@
+{% extends "DaoTao/daoTaoBase.html" %}
+{% load static %}
+{% load humanizelib %}
+{% load l10n %}
+{% block title %}Danh sách các học phần{% endblock %}
+{% block content %}
+<style>
+    .bigger-icon {
+        font-size: 1.2em;
+        color: #000;
+    }
+    
+    .bigger-icon a {
+        text-decoration: none;
+    }
+
+</style>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <div class="row">
+            <div class="col-9">
+                <h4 class="m-0 font-weight-bold text-primary">Danh sách các học phần</h4>
+            </div>
+            <div class="col-3">
+                <a href="{% url 'newHocPhan' %}"><button class = "btn btn-success float-end" >Thêm học phần</button></a>
+                <button type="button" class="btn btn-primary float-end me-1" data-bs-toggle="modal" data-bs-target="#myModal">
+                    <i class="fa fa-plus-circle"></i> Nhập File Excel
+                </button>
+                <div class="modal fade" id="myModal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Nhập File Excel</h4>
+                                <button type="button" class="close" data-bs-dismiss="modal">×</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <form method="post" enctype="multipart/form-data" action="{% url 'excelImportHocPhan' %}">
+                                            {% csrf_token %}
+                                            <div class="d-flex justify-content-center">
+                                                <input name="excel_file" type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" required />
+                                                <button class="btn btn-success" type="submit">Nhập</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Đóng</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        {% if alertContent == "Thêm" %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <strong>Thêm học phần mới thành công!</strong>
+            </div>
+        {% endif %}
+        {% if alertContent == "Sửa" %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <strong>Sửa học phần thành công!</strong>
+            </div>
+        {% endif %}
+        {% if alertContent == "Xóa" %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <strong>Xóa học phần thành công!</strong>
+            </div>
+        {% endif %}
+        <div class="row">
+            <div class="col-3">
+                <div class="row">
+                    <div class="col-4 mt-2 ">
+                      <label class="fw-bold float-end">Loại học phần</label>
+                    </div>
+                    <div class="col-8">
+                    <select class="form-control combobox" name="loaiHocPhan" id="loaiHocPhan" onchange="onChangeLoaiHocPhan()"
+                        required>
+                        <option value="all">Tất cả</option>
+                        <option value="Đại cương">Đại cương</option>
+                        <option value="Chuyên ngành">Chuyên ngành</option>
+                    </select>
+                    </div>
+                  </div>
+            </div>
+            <div class="col-3">
+                <div class="row">
+                    <div class="col-4 mt-2 ">
+                      <label class="fw-bold float-end">Hệ đào tạo</label>
+                    </div>
+                    <div class="col-8">
+                        <select class="form-control combobox" name="heDaoTao" id="heDaoTao" onchange="onChangeHeDaoTao()" disabled>
+                          <option value="all">Tất cả</option>
+                          {% for value in cacHeDaoTao %}
+                          <option value="{{ value.tenHeDaoTao }}">{{ value.tenHeDaoTao }}</option>
+                          {% endfor %}
+                        </select>
+                    </div>
+                  </div>
+            </div>
+            <div class="col-3">
+                <div class="row">
+                    <div class="col-4 mt-2">
+                      <label class="fw-bold float-end">Khoa</label>
+                    </div>
+                    <div class="col-8">
+                        <select class="form-control combobox" name="khoa" id="khoa" onchange="onChangeKhoa()" disabled>
+                          <option value="all">Tất cả</option>
+                          {% for value in cacKhoa %}
+                          <option value="{{ value.tenKhoa }}">{{ value.tenKhoa }}</option>
+                          {% endfor %}
+                        </select>
+                    </div>
+                  </div>
+            </div>
+            <div class="col-3">
+                <div class="row">
+                    <div class="col-4 mt-2">
+                      <p class="fw-bold float-end">Ngành đào tạo</p>
+                    </div>
+                    <div class="col-8">
+                        <select class="form-control combobox" name="nganhDaoTao" id="nganhDaoTao" onchange="onChangeNganhDaoTao()" disabled>
+                            <option value="all">Tất cả</option>
+                        </select>
+                    </div>
+                  </div>
+            </div>
+        </div>
+
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                <th>
+                    Loại môn học
+                </th>
+                <th>
+                    Hệ đào tạo
+                </th>
+                <th>
+                    Khoa
+                </th>
+                <th>
+                    Ngành đào tạo
+                </th>
+                <th>
+                    Mã học phần
+                </th>
+                <th>
+                    Tên học phần
+                </th>
+                <th>
+                    Số tín chỉ
+                </th>
+                <th>
+                    Số tiền
+                </th>
+                <th>
+                    Thao tác
+                </th>
+                </thead>
+                <tbody>
+                    {% for hocPhan in listHocPhan %}
+                        <tr id="{{ hocPhan.id }}">
+                            {% if hocPhan.nganhDaoTao == None %}
+                                <td>Đại cương</td>
+                            {% else %}
+                                <td>Chuyên ngành</td>
+                            {% endif %}
+                            <td>{{ hocPhan.heDaoTao.tenHeDaoTao }}</td>
+                            <td>{{ hocPhan.nganhDaoTao.khoa.tenKhoa }}</td>
+                            <td>{{ hocPhan.nganhDaoTao.tenNganhDaoTao }}</td>
+                            <td>{{ hocPhan.maHocPhan }}</td>
+                            <td>{{ hocPhan.tenHocPhan }}</td>
+                            <td>{{ hocPhan.soTinChi }}</td>
+                            <td>{{ hocPhan.soTien|intcomma|localize }}</td>
+                            <td style="text-align: center;">
+                                <a href="{% url 'suaHocPhan' hocPhan.id %}">
+                                    <i class="fas fa-pen-to-square bigger-icon"></i>
+                                </a>
+                                <a href="{% url 'xoaHocPhan' hocPhan.id %}">
+                                    <i class="far fa-trash-alt bigger-icon"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    // Auto-close the alert after 3 seconds (3000 milliseconds)
+    setTimeout(() => {
+      document.getElementById('myAlert').remove();
+    }, 3000);
+</script>
+<script type="text/javascript">
+$('#dataTable').DataTable({
+            language: {
+                searchPlaceholder: "Tìm kiếm",
+                search: "",
+                "sInfo": "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+                "sInfoEmpty": "Hiển thị 0 đến 0 của 0 mục",
+                "sInfoFiltered": "Lọc từ _MAX_ mục",
+                "sLengthMenu": "Hiện _MENU_ mục",
+                "sEmptyTable": "Không có dữ liệu",
+
+            },
+            stateSave: true,
+            dom: '<"clear"><"row"<"col"l><"col"f>>rt<"row"<"col"i><"col"p>><"row"<"col"B>>',
+            buttons: [
+                {
+                    extend: 'excel',
+                    exportOptions: {
+                        columns: ':not(:last-child)',
+                    }, title: ''
+                }, {
+                    extend: 'pdf',
+                    exportOptions: {
+                        columns: ':not(:last-child)',
+                    }, title: ''
+                }
+            ]
+        });
+
+$('.dataTables_filter input[type="search"]').css({
+    width: '350px',
+    display: 'inline-block',
+    height: '40px',
+});
+
+</script>
+<script>
+const table = $('#dataTable').DataTable();
+const originalData = table.rows().data();
+
+function onChangeLoaiHocPhan() {
+    LockSelection();
+    FilterComboBox();
+    filterRows();
+}
+function onChangeHeDaoTao() {
+    var cmbNganhDaoTao = document.getElementById('nganhDaoTao');
+    var cmbKhoa = document.getElementById('khoa');
+    cmbNganhDaoTao.selectedIndex = 0;
+    cmbKhoa.selectedIndex = 0;
+    LockSelection();
+    FilterComboBox();
+    filterRows();
+}
+function onChangeKhoa() {
+    LockSelection();
+    FilterComboBox();
+    filterRows();
+}
+
+function onChangeNganhDaoTao() {
+    filterRows();
+}
+
+function filterRows() {
+    const loaiHocPhan = $('#loaiHocPhan').val();
+    const heDaoTao = $('#heDaoTao').val();
+    const khoa = $('#khoa').val();
+    const nganhDaoTao = $('#nganhDaoTao').val();
+    table.clear();
+
+    if (loaiHocPhan === 'all') {
+        table.rows.add(originalData.toArray());
+    } else {
+        originalData.each(function(value, index) {
+            if (value[0] === loaiHocPhan) {
+                table.row.add(value);
+            }
+        });
+        if (heDaoTao !== 'all') {
+            table.clear();
+            originalData.each(function(value, index) {
+            if (value[1] === heDaoTao) {
+                table.row.add(value);
+            }
+            });
+            if (khoa !== 'all') {
+                table.clear();
+                originalData.each(function(value, index) {
+                if (value[2] === khoa) {
+                    table.row.add(value);
+                }
+                });
+                if (nganhDaoTao !== 'all') {
+                    table.clear();
+                    originalData.each(function(value, index) {
+                    if (value[3] === nganhDaoTao) {
+                        table.row.add(value);
+                    }
+                    });
+                }
+            }
+        }   
+    }
+
+    table.draw();
+}
+function FilterComboBox() {
+    var cmbHeDaoTao = document.getElementById('heDaoTao');
+    var cmbNganhDaoTao = document.getElementById('nganhDaoTao');
+    var cmbKhoa = document.getElementById('khoa');
+    var selectedHeDaoTao = cmbHeDaoTao.value;
+    var selectedKhoa = cmbKhoa.value;
+    
+    cmbNganhDaoTao.innerHTML = '';
+
+    var newOption = document.createElement('option');
+    newOption.value = 'all';
+    newOption.textContent = 'Tất cả';
+    cmbNganhDaoTao.appendChild(newOption);
+    {% for value in cacNganhDaoTao %}
+      if ("{{ value.heDaoTao.tenHeDaoTao }}" == selectedHeDaoTao && "{{ value.khoa.tenKhoa }}" == selectedKhoa) {
+        var newOption = document.createElement('option');
+        newOption.value = "{{ value.tenNganhDaoTao }}";
+        newOption.textContent = "{{ value.tenNganhDaoTao }}";
+        cmbNganhDaoTao.appendChild(newOption);
+      }
+    {% endfor %}
+}
+function LockSelection(){
+    var cmbLoaiHocPhan = document.getElementById("loaiHocPhan");
+    var cmbHeDaoTao = document.getElementById('heDaoTao');
+    var cmbNganhDaoTao = document.getElementById('nganhDaoTao');
+    var cmbKhoa = document.getElementById('khoa');
+    var loaiHocPhan = cmbLoaiHocPhan.value;
+    var heDaoTao = cmbHeDaoTao.value;
+    var nganhDaoTao = cmbNganhDaoTao.value;
+    var khoa = cmbKhoa.value;
+
+    if (loaiHocPhan === "Đại cương" || loaiHocPhan == "all") {
+    cmbHeDaoTao.disabled = true;
+    cmbNganhDaoTao.disabled = true;
+    cmbKhoa.disabled = true;
+    cmbHeDaoTao.selectedIndex = 0;
+    cmbNganhDaoTao.selectedIndex = 0;
+    cmbKhoa.selectedIndex = 0;
+    }
+    else if (loaiHocPhan === "Chuyên ngành") {
+    cmbHeDaoTao.disabled = false;
+    cmbNganhDaoTao.disabled = false;
+    cmbKhoa.disabled = false;
+    }
+}
+</script>
+{% endblock %}

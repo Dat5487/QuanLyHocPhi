@@ -9,8 +9,12 @@ from django.shortcuts import redirect
 @login_required
 def sinhVienHome(request):
     maSinhVien = request.session.get('maSinhVien')
-    sinhVien = get_object_or_404(SinhVien, maSV=maSinhVien).hoTen
-    return render(request, 'SinhVien/sinhVienHome.html', {'sinhVien': sinhVien})
+    sinhVien = get_object_or_404(SinhVien, maSV=maSinhVien)
+    hoTen = sinhVien.hoTen
+    soHocPhi = ThanhToanHocPhi.objects.filter(sinhVien = sinhVien).filter(trangThai = False).count()
+    soKhoanThuKhac = ThanhToanKhoanThuKhac.objects.filter(sinhVien = sinhVien).filter(trangThai = False).count()
+
+    return render(request, 'SinhVien/sinhVienHome.html', {'hoTen': hoTen,'soHocPhi':soHocPhi,'soKhoanThuKhac':soKhoanThuKhac})
 
 
 @login_required
@@ -21,7 +25,7 @@ def DangKyTinChi(request):
     thietLapDangKy = HocPhanChoDangKy.objects.all().filter(namKhoa=sinhVien.namKhoa, nganhDaoTao=sinhVien.lop.nganhDaoTao, trangThai = 1).order_by('-id').first()
     hocPhanDaDangKy = HocPhanDaDangKy.objects.all().filter(hocPhanChoDangKy=thietLapDangKy, sinhVien = sinhVien).order_by('-id').first()
     hocPhanDuocXetDuyet = HocPhanDuocXetDuyet.objects.filter(hocPhanDaDangKy = hocPhanDaDangKy).first()
-    if hocPhanDuocXetDuyet is None:
+    if hocPhanDuocXetDuyet is None and thietLapDangKy is not None:
         if hocPhanDaDangKy is not None:
             cacHocPhanDuocChon = hocPhanDaDangKy.hocPhan.all()
         else:
@@ -63,7 +67,7 @@ def DangKyTinChi(request):
 def ListHocPhanDaDangKy(request):
     maSinhVien = request.session.get('maSinhVien')
     sinhVien = get_object_or_404(SinhVien, maSV=maSinhVien)
-    cacHocPhanDuyet = HocPhanDuocXetDuyet.objects.all().filter(hocPhanDaDangKy__sinhVien=sinhVien)
+    cacHocPhanDuyet = HocPhanDuocXetDuyet.objects.all().filter(hocPhanDaDangKy__sinhVien=sinhVien).order_by('-id')
     cacHocPhan = []
     for hocPhan in cacHocPhanDuyet:
         cacHocPhan.append(hocPhan.hocPhanDaDangKy)
@@ -94,7 +98,7 @@ def ListKhoanThanhToan(request):
         trangThai = khoan.trangThai
         khoanThanhToan = KhoanThanhToan(id,namHoc,hocKy,soTinChi,soTien,trangThai)
         listKhoanThanhToan.append(khoanThanhToan)
-    listThanhToanKhac = ThanhToanKhoanThuKhac.objects.all().filter(sinhVien=sinhVien)
+    listThanhToanKhac = ThanhToanKhoanThuKhac.objects.all().filter(sinhVien=sinhVien).order_by('-id')
     return render(request, 'SinhVien/ThanhToanHocPhi/listKhoanThanhToan.html', {'listKhoanThanhToan': listKhoanThanhToan,'listThanhToanKhac': listThanhToanKhac})
 
 @login_required

@@ -30,13 +30,18 @@
       object-fit: cover;
   
     }
-
-  </style>
+    .custom-image-size2 {
+      width: 1.7em;
+      height: 1.7em;
+      object-fit: cover;
+  
+    }
+</style>
     </head>
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-light bg-light">
             <!-- Navbar Brand-->
-            <a class="navbar-brand ps-3" href="{% url 'canBoHome' %}">UHL</a>
+            <a class="navbar-brand ps-3" href="{% url 'daoTaoHome' %}"><img class="custom-image-size" src="{% static 'images/home.png' %}"></a>
             <!-- Sidebar Toggle-->
             <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
             <!-- Navbar Search-->
@@ -48,11 +53,7 @@
             <!-- Navbar-->
             <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
-                    
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="{% url 'logout' %}">Đăng xuất</a></li>
-                    </ul>
+                    <a class="dropdown-item" href="{% url 'logout' %}"><button class="btn btn-outline-dark">Đăng xuất</button></a>
                 </li>
             </ul>
         </nav>
@@ -61,11 +62,7 @@
                 <nav class="sb-sidenav accordion sb-sidenav-light" id="sidenavAccordion">
                     <div class="sb-sidenav-menu">
                         <div class="nav">
-                            <div class="sb-sidenav-menu-heading">Học phần</div>
-                            <a class="nav-link" href="{% url 'listThietLapDangKy' %}">
-                                <div class="sb-nav-link-icon"><img class="custom-image-size" src="{% static 'images/setting.png' %}"></div>
-                                Thiết lập danh sách học phần
-                            </a>
+                            <div class="sb-sidenav-menu-heading">Quản lý học phần</div>
                             <a class="nav-link" href="{% url 'listThietLapDangKy' %}">
                                 <div class="sb-nav-link-icon"><img class="custom-image-size" src="{% static 'images/setting.png' %}"></div>
                                 Thiết lập đăng ký
@@ -73,6 +70,14 @@
                             <a class="nav-link" href="{% url 'listXetDuyetDangKy' %}">
                                 <div class="sb-nav-link-icon"><img class="custom-image-size" src="{% static 'images/approve.png' %}"></div>
                                 Xét duyệt đăng ký học phần
+                            </a>
+                            <a class="nav-link" href="{% url 'dropListNganhDaoTao' %}">
+                                <div class="sb-nav-link-icon"><img class="custom-image-size" src="{% static 'images/sinhvien.png' %}"></div>
+                                Thiết lập danh sách sinh viên
+                            </a>
+                            <a class="nav-link" href="{% url 'listHocPhan' %}">
+                                <div class="sb-nav-link-icon"><img class="custom-image-size2" src="{% static 'images/hedaotao.png' %}"></div>
+                                Thiết lập danh sách học phần
                             </a>
                         </div>
                     </div>

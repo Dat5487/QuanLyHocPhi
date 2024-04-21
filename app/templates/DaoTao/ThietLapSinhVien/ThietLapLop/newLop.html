@@ -1,0 +1,80 @@
+{% extends "DaoTao/daoTaoBase.html" %}
+{% load static %}
+{% block title %}Thêm lớp{% endblock %}
+{% block content %}
+<div class="card shadow mb-4">
+  <div class="card-header py-3">
+      <h4 class="m-0 font-weight-bold text-primary">Thêm lớp</h4>
+  </div>
+  <div class="card-body">
+    <form method="POST" action="{% url 'newLop' nganhDaoTao.id %}">
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-6">
+            <div class="form-group mt-2">
+                <label class="fw-bold  ">Hệ đào tạo</label>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <img class="custom-image-size" src="{% static 'images/hedaotao.png' %}" alt="Image">
+                    </span>
+                  </div>
+                <input class="form-control" value="{{ nganhDaoTao.heDaoTao.tenHeDaoTao }}" disabled/>
+                <input class="form-control" name="heDaoTao" value="{{ nganhDaoTao.heDaoTao.id }}" hidden/>
+                </div>
+            </div>
+            <div class="form-group mt-2">
+                <label class="fw-bold  ">Ngành đào tạo</label>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <img class="custom-image-size" src="{% static 'images/nganhdaotao.png' %}" alt="Image">
+                    </span>
+                  </div>
+                  <input class="form-control" value="{{ nganhDaoTao.tenNganhDaoTao }}" disabled/>
+                  <input class="form-control" name="nganhDaoTao" value="{{ nganhDaoTao.id }}" hidden/>
+                </div>
+            </div>
+            <div class="form-group mt-2">
+                <label class="fw-bold  ">Khoa</label>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <img class="custom-image-size" src="{% static 'images/khoa.png' %}" alt="Image">
+                    </span>
+                  </div>
+                  <input class="form-control" value="{{ nganhDaoTao.khoa.tenKhoa }}" disabled/>
+                  <input class="form-control" name="khoa" value="{{ nganhDaoTao.khoa.id }}" hidden/>
+                </div>
+            </div>
+            <div class="form-group mt-2">
+                <label class="fw-bold  ">Tên lớp</label>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <img class="custom-image-size" src="{% static 'images/lop.png' %}" alt="Image">
+                    </span>
+                  </div>
+                <input class="form-control" name="lop"></input>
+                </div>
+            </div>
+            <div class="form-group mt-2">
+                <label class="fw-bold  ">Khóa</label>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <img class="custom-image-size" src="{% static 'images/khoahoc.png' %}" alt="Image">
+                    </span>
+                  </div>
+                <input class="form-control" name="namKhoa"></input>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Xác nhận</button>
+            <a class="btn btn-danger mt-3" href="{% url 'listLopHoc' nganhDaoTao.id %}">Hủy</a>
+          </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

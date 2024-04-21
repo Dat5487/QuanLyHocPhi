@@ -55,6 +55,47 @@
               </div>
             </div>
           </div>
+
+          <div class="form-group mt-2">
+            <div class="row">
+              <div class="col-3 mt-2">
+                <center class="fw-bold fs-5">Năm học</center>
+              </div>
+              <div class="col-4">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <img class="custom-image-size" src="{% static 'images/namhoc.png' %}" alt="Image">
+                    </span>
+                  </div>
+                  <select class="form-control combobox" id="namBatDau" name="namBatDau" onchange="updateSecondSelect()" required>
+                    <option value=""></option>
+                    <option value="2020">2020</option>
+                    <option value="2021">2021</option>
+                    <option value="2022">2022</option>
+                    <option value="2023">2023</option>
+                    <option value="2024">2024</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-1">
+                <center class="fw-bold fs-5">Đến</center>
+              </div>
+              <div class="col-4">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <img class="custom-image-size" src="{% static 'images/namhoc.png' %}" alt="Image">
+                    </span>
+                  </div>
+                <select class="form-control combobox" id="namKetThuc" name="namKetThuc" required>
+                  <option value=""></option>
+                </select>
+                </div>
+            </div>
+            </div>
+          </div>
+
           <div class="form-group mt-2">
             <div class="row">
               <div class="col-3 mt-2">
@@ -79,6 +120,7 @@
               </div>
             </div>
           </div>
+
           <div class="form-group mt-2">
             <div class="row">
               <div class="col-3 mt-2">
@@ -176,6 +218,24 @@
   </div>
 </div>
 
+<script>
+  const hideCheckbox = document.getElementById('hideCheckbox');
+  hideCheckbox.addEventListener('change', function() {
+    const table = document.getElementById('myTable');
+    const rows = table.getElementsByTagName('tr');
+    
+    for (let i = 1; i < rows.length; i++) {
+      const genderCell = rows[i].getElementsByTagName('td')[2];
+      const gender = genderCell.textContent.toLowerCase().trim();
+
+      if (hideCheckbox.checked && gender === 'male') {
+        rows[i].style.display = 'none';
+      } else {
+        rows[i].style.display = '';
+      }
+    }
+  });
+</script>
 
 <script>
   function ChonBaoCao(){
@@ -260,9 +320,6 @@
     cmbLop.innerHTML = '';
     
     {% for value in cacLop %}
-      console.log("{{ value.nganhDaoTao.tenNganhDaoTao }}");
-      console.log(selectedNganhDaoTao);
-      console.log("-");
       if ("{{ value.nganhDaoTao.tenNganhDaoTao }}" == selectedNganhDaoTao && "{{ value.namKhoa }}" == selectedNamKhoa) {
         var newOption = document.createElement('option');
         newOption.value = "{{ value.id }}";
@@ -272,5 +329,26 @@
     {% endfor %}
   }
 
+</script>
+<script>
+  function updateSecondSelect() {
+    const firstSelect = document.getElementById('namBatDau');
+    const secondSelect = document.getElementById('namKetThuc');
+
+    // Clear existing options
+    secondSelect.innerHTML = '<option value=""></option>';
+
+    if (firstSelect.value !== '') {
+      const currentYear = new Date().getFullYear();
+      const selectedYear = parseInt(firstSelect.value);
+
+      for (let year = selectedYear + 1; year <= currentYear; year++) {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        secondSelect.appendChild(option);
+      }
+    }
+  }
 </script>
 {% endblock %}

@@ -1,4 +1,4 @@
-{% extends "CanBo/canBoBase.html" %}
+{% extends "DaoTao/daoTaoBase.html" %}
 {% load static %}
 {% load humanizelib %}
 {% load l10n %}
@@ -13,18 +13,48 @@
       {% csrf_token %}
       <div class="row">
         <div class="form-group mt-2">
-          <label class="fw-bold  ">Tên ngành</label>
+          <label class="fw-bold  ">Hệ đào tạo</label>
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text">
+                <img class="custom-image-size" src="{% static 'images/hedaotao.png' %}" alt="Image">
+              </span>
+            </div>
+          <select class="form-control combobox" id="heDaoTao" name="heDaoTao" onchange="FilterComboBox()" required>
+            <option value=""></option>
+            {% for value in cacHeDaoTao %}
+                <option value="{{ value.id }}">{{ value.tenHeDaoTao }}</option>
+            {% endfor %}
+        </select>
+        </div>
+        </div>
+        <div class="form-group mt-2">
+          <label class="fw-bold  ">Khoa</label>
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text">
+                <img class="custom-image-size" src="{% static 'images/khoa.png' %}" alt="Image">
+              </span>
+            </div>
+          <select class="form-control combobox" name="khoa" id="khoa" onchange="FilterComboBox()">
+            <option value=""></option>
+            {% for value in cacKhoa %}
+            <option value="{{ value.tenKhoa }}">{{ value.tenKhoa }}</option>
+            {% endfor %}
+            </select>
+        </div>
+        </div>
+        <div class="form-group mt-2">
+          <label class="fw-bold  ">Ngành đào tạo</label>
           <div class="input-group">
             <div class="input-group-prepend">
               <span class="input-group-text">
                 <img class="custom-image-size" src="{% static 'images/nganhdaotao.png' %}" alt="Image">
               </span>
             </div>
-            <select class="form-control combobox" id="nganhDaoTao" name="nganhDaoTao" required>
+            <select class="form-control combobox" id="nganhDaoTao" name="nganhDaoTao" onchange="filterRows()" required>
               <option value=""></option>
-              {% for value in cacNganhDaoTao %}
-              <option value="{{ value.id }}">{{ value.tenNganhDaoTao }}</option>
-              {% endfor %}
+
             </select>
           </div>
         </div>
@@ -73,9 +103,35 @@
           </div>
         </div>
       <hr/>
+      <div class="row">
+        <div class="col-3">
+            <div class="row">
+                <div class="col-4 mt-2 ">
+                  <label class="fw-bold float-end">Loại học phần</label>
+                </div>
+                <div class="col-8">
+                <select class="form-control combobox" name="loaiHocPhan" id="loaiHocPhan" onchange="filterRows()"
+                    required>
+                    <option value="all">Tất cả</option>
+                    <option value="Đại cương">Đại cương</option>
+                    <option value="Chuyên ngành">Chuyên ngành</option>
+                </select>
+                </div>
+              </div>
+        </div>
+      </div>
         <div class="table-responsive mt-3">
             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                 <thead>
+                <th>
+                    Loại học phần
+                </th>
+                <th>
+                    Hệ đào tạo
+                </th>
+                <th>
+                    Ngành đào tạo
+                </th>
                 <th>
                     Mã học phần
                 </th>
@@ -95,11 +151,18 @@
                 <tbody>
                     {% for hocPhan in cacHocPhan %}
                         <tr id="{{ hocPhan.id }}">
+                            {% if hocPhan.nganhDaoTao == None %}
+                                <td>Đại cương</td>
+                            {% else %}
+                                <td>Chuyên ngành</td>
+                            {% endif %}
+                            <td>{{ hocPhan.heDaoTao.tenHeDaoTao }}</td>
+                            <td>{{ hocPhan.nganhDaoTao.tenNganhDaoTao }}</td>
                             <td>{{ hocPhan.maHocPhan }}</td>
                             <td>{{ hocPhan.tenHocPhan }}</td>
                             <td>{{ hocPhan.soTinChi }}</td>
                             <td>{{ hocPhan.soTien|intcomma|localize }}</td>
-                            <td><input type="checkbox" name="hocPhan" value="{{ hocPhan.id }}" onchange="updateSum()"></td>
+                            <td><input type="checkbox" name="hocPhan" value="{{ hocPhan.id }}" id="{{ hocPhan.id }}" onchange="updateSum(this,'{{ hocPhan.id }}')"></td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -133,11 +196,10 @@
 </div>
 
 <script>
-    function updateSum() {
-      
+  var selectedRows = [];
+    function updateSum(checkbox,rowId) {
       var checkboxes = document.getElementsByName('hocPhan');
       var sum = 0;
-  
       for (var i = 0; i < checkboxes.length; i++) {
         if (checkboxes[i].checked) {
             {% for hocPhan in cacHocPhan %}
@@ -145,11 +207,21 @@
                 sum += parseInt("{{ hocPhan.soTien }}");
             }
             {% endfor %}
-          
         }
       }
       updateSumTin();
       document.getElementById('tongSoTien').textContent = sum.toLocaleString() + " (" + to_vietnamese(sum).charAt(0).toUpperCase() + to_vietnamese(sum).slice(1) + ")";
+  
+      var row = checkbox.parentNode.parentNode; // Assuming checkbox is in a <td> inside the <tr>
+      if (checkbox.checked) {
+        selectedRows.push(rowId);
+      } else {
+        var index = selectedRows.indexOf(rowId);
+        if (index !== -1) {
+          selectedRows.splice(index, 1);
+        }
+      }
+      console.log(selectedRows);
     }
     function updateSumTin() {
       var checkboxes = document.getElementsByName('hocPhan');
@@ -179,9 +251,11 @@
                     "sInfoFiltered": "Lọc từ _MAX_ mục",
                     "sLengthMenu": "Hiện _MENU_ mục",
                     "sEmptyTable": "Không có dữ liệu",
-    
+                  
                 },
-                stateSave: true,
+                
+                stateSave: false,
+                "pageLength": 100,
                 dom: '<"clear"><"row"<"col"l><"col"f>>rt<"row"<"col"i><"col"p>><"row">',
                 buttons: [
                     {
@@ -205,8 +279,9 @@
     
 </script>
 <script>
+  const table = $('#dataTable').DataTable();
+  const originalData = table.rows().data();
   const defaultNumbers = ' hai ba bốn năm sáu bảy tám chín';
-
   const chuHangDonVi = ('1 một' + defaultNumbers).split(' ');
   const chuHangChuc = ('lẻ mười' + defaultNumbers).split(' ');
   const chuHangTram = ('không một' + defaultNumbers).split(' ');
@@ -292,5 +367,82 @@
     // Trả về kết quả kèm xóa những ký tự thừa
     return rsString.replace(/[0-9]/g, '').replace(/ /g, ' ').replace(/ $/, '') + " đồng";
   }
+  function FilterComboBox() {
+    var cmbHeDaoTao = document.getElementById('heDaoTao');
+    var cmbNganhDaoTao = document.getElementById('nganhDaoTao');
+    var cmbKhoa = document.getElementById('khoa');
+    var selectedHeDaoTao = cmbHeDaoTao.value;
+    var selectedKhoa = cmbKhoa.value;
+    
+    cmbNganhDaoTao.innerHTML = '';
+
+    {% for value in cacNganhDaoTao %}
+      if ("{{ value.heDaoTao.id }}" == selectedHeDaoTao && "{{ value.khoa.tenKhoa }}" == selectedKhoa) {
+        var newOption = document.createElement('option');
+        newOption.value = "{{ value.id }}";
+        newOption.textContent = "{{ value.tenNganhDaoTao }}";
+        cmbNganhDaoTao.appendChild(newOption);
+      }
+    {% endfor %}
+    filterRows();
+}
+function filterRows() {
+    var loaiHocPhan = $('#loaiHocPhan').val();
+    var cmbNganhDaoTao = document.getElementById('nganhDaoTao');
+    var nganhDaoTaoOption = cmbNganhDaoTao.options[cmbNganhDaoTao.selectedIndex];
+    if (nganhDaoTaoOption == null){
+      var nganhDaoTao = null
+    } else {
+      var nganhDaoTao = nganhDaoTaoOption.textContent;
+    }
+     
+
+    var cmbHeDaoTao = document.getElementById('heDaoTao');
+    var heDaoTaoOption = cmbHeDaoTao.options[cmbHeDaoTao.selectedIndex];
+    var heDaoTao = heDaoTaoOption.textContent;
+
+    table.clear();
+    if (loaiHocPhan === 'all') {
+      originalData.each(function(value, index) {
+            if (value[0] === "Đại cương" && value[1] === heDaoTao) {
+                table.row.add(value);
+            }
+            else if (value[2] === nganhDaoTao) {
+                table.row.add(value);
+            }
+        });
+
+    } 
+    if (loaiHocPhan === "Đại cương" ) {
+        originalData.each(function(value, index) {
+            if (value[0] === loaiHocPhan && value[1] === heDaoTao) {
+                table.row.add(value);
+            }
+        });
+    }
+    else if (loaiHocPhan === "Chuyên ngành") {
+      originalData.each(function(value, index) {
+            if (value[0] === loaiHocPhan && value[2]=== nganhDaoTao) {
+                table.row.add(value);
+            }
+        });
+    }   
+    table.draw();
+    checkSelectedRows();
+    updateSumTin();
+}
+
+function checkSelectedRows() {
+  for (var i = 0; i < selectedRows.length; i++) {
+    var row = document.getElementById(selectedRows[i]);
+
+    if (row) {
+      var checkbox = row.querySelector('input[type="checkbox"]');
+      if (checkbox) {
+        checkbox.checked = true;
+      }
+    }
+  }
+}
 </script>
 {% endblock %}

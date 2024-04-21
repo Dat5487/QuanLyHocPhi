@@ -1,0 +1,45 @@
+{% extends "DaoTao/daoTaoBase.html" %}
+{% load static %}
+{% load humanizelib %}
+{% load l10n %}
+{% block title %}Trường Đại học Hạ Long{% endblock %}
+{% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="{% static 'css/styles2.css' %}">
+
+<div class="team-boxed">
+  <div class="intro">
+    <center class="fs-3 fw-bold pt-5">Hệ thống quản lý học phần dành cho</center>
+    <center class="fs-3 fw-bold pb-2">Cán bộ phòng đào tạo</center>
+</div>
+  <div class="row people px-5">
+    <div class="col-md-6 col-lg-6 item">
+      <div class="box">
+        <img src="{% static 'images/setting.png' %}">
+        <h3 class="name">Thiết lập đăng ký học phần</h3>
+        <p class="title"></p>
+        {% if soThietLap == 0 %}
+            <p class="description">Hiện tại không có thiết lập đăng ký nào đang mở cho sinh viên đăng ký</p>
+        {% else %}
+            <p class="description">Hiện tại có {{ soThietLap }} thiết lập đăng ký đang mở cho sinh viên đăng ký</p>
+        {% endif %}
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-6 item">
+      <div class="box">
+        <img src="{% static 'images/approve.png' %}">
+        <h3 class="name">Xét duyệt đăng ký học phần</h3>
+        <p class="title"></p>
+        {% if soXetDuyet == 0 %}
+            <p class="description">Hiện tại không có yêu cầu đăng ký tín chỉ chờ xét duyệt</p>
+        {% else %}
+            <p class="description">Hiện tại có {{ soXetDuyet }} yêu cầu đăng ký tín chỉ chờ xét duyệt</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+<hr />
+
+{% endblock %}

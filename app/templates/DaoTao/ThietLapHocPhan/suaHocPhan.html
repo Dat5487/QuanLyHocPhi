@@ -1,0 +1,100 @@
+{% extends "DaoTao/daoTaoBase.html" %}
+{% load static %}
+{% block title %}Sửa thiết lập học phần{% endblock %}
+{% block content %}
+<div class="card shadow mb-4">
+  <div class="card-header py-3">
+    <h4 class="m-0 font-weight-bold text-primary">Sửa thiết lập học phần</h4>
+  </div>
+  <div class="card-body">
+    <form method="POST" action="{% url 'suaHocPhan' hocPhan.id %}">
+      {% csrf_token %}
+      <div class="row">
+        <div class="col-6">
+          <div class="form-group mt-2">
+            <label class="fw-bold  ">Tên học phần</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <img class="custom-image-size" src="{% static 'images/report.png' %}" alt="Image">
+                </span>
+              </div>
+            <input class="form-control" name="tenHocPhan" value="{{ hocPhan.tenHocPhan }}"></input>
+            </div>
+          </div>
+          <div class="form-group mt-2">
+            <label class="fw-bold  ">Số tín chỉ</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <img class="custom-image-size" src="{% static 'images/heso.png' %}" alt="Image">
+                </span>
+              </div>
+            <input class="form-control" name="soTinChi" type="number" value="{{ hocPhan.soTinChi }}"></input>
+            </div>
+          </div>
+
+          <div class="form-group mt-2">
+            <label class="fw-bold  ">Số tiền</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <img class="custom-image-size" src="{% static 'images/muchocphi.png' %}" alt="Image">
+                </span>
+              </div>
+              <input type="text" class="form-control" name="soTien" id="currency-field" data-type="currency"
+                value="{{ soTien }}">
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+      <button type="submit" class="btn btn-primary mt-3">Xác nhận</button>
+      <a class="btn btn-danger mt-3" href="{% url 'listHocPhan' %}">Hủy</a>
+    </form>
+  </div>
+</div>
+<script>
+    $("input[data-type='currency']").on({
+        keyup: function() {
+        formatCurrency($(this));
+        },
+        blur: function() { 
+        formatCurrency($(this), "blur");
+        }
+    });
+
+
+    function formatNumber(n) {
+    return n.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    }
+
+    function formatCurrency(input, blur) {
+    var input_val = input.val();
+    if (input_val === "") { return; }
+    var original_len = input_val.length;
+    var caret_pos = input.prop("selectionStart");
+    if (input_val.indexOf(".") >= 0) {
+        var decimal_pos = input_val.indexOf(".");
+        var left_side = input_val.substring(0, decimal_pos);
+        var right_side = input_val.substring(decimal_pos);
+        left_side = formatNumber(left_side);
+        right_side = formatNumber(right_side);
+        if (blur === "blur") {
+        right_side += "00";
+        }
+        right_side = right_side.substring(0, 2);
+        input_val = left_side + "." + right_side;
+    } else {
+        input_val = formatNumber(input_val);
+        input_val = input_val ;
+    }
+    input.val(input_val);
+    var updated_len = input_val.length;
+    caret_pos = updated_len - original_len + caret_pos;
+    input[0].setSelectionRange(caret_pos, caret_pos);
+    }
+  </script>
+  
+{% endblock %}

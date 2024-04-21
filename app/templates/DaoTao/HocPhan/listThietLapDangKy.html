@@ -1,0 +1,152 @@
+{% extends "DaoTao/daoTaoBase.html" %}
+{% load static %}
+{% load humanizelib %}
+{% load l10n %}
+{% block title %}Danh sách thiết lập đăng ký học phần{% endblock %}
+{% block content %}
+
+
+<style>
+    .bigger-icon {
+        font-size: 1.2em;
+        color: #000;
+    }
+    
+    .bigger-icon a {
+        text-decoration: none;
+    }
+</style>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <div class="row">
+                <div class="col-9">
+                    <h4 class="m-0 font-weight-bold text-primary">Danh sách thiết lập đăng ký học phần</h4>
+                </div>
+                <div class="col-3">
+                    <a href="{% url 'newThietLapDangKy' %}"><button class = "btn btn-success float-end" >Thêm thiết lập đăng ký</button></a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if alertContent == "Thêm" %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <strong>Thêm thiết lập mới thành công!</strong>
+              </div>
+            {% endif %}
+            {% if alertContent == "Sửa" %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <strong>Sửa thiết lập thành công!</strong>
+              </div>
+            {% endif %}
+            {% if alertContent == "Xóa" %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <strong>Xóa thiết lập thành công!</strong>
+              </div>
+            {% endif %}
+            <div class="table-responsive mt-3">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                    <th>
+                        Ngành đào tạo
+                    </th>
+                    <th>
+                        Khóa
+                    </th>
+                    <th>
+                        Năm học
+                    </th>
+                    <th>
+                        Học kỳ
+                    </th>
+                    <th>
+                        Trạng thái
+                    </th>
+                    <th>
+                        Thao tác
+                    </th>
+                    </thead>
+                    <tbody>
+                        {% for thietLap in listThietLap %}
+                            <tr id="{{ thietLap.id }}">
+                                <td>{{ thietLap.nganhDaoTao.tenNganhDaoTao }}</td>
+                                <td>Khóa {{ thietLap.namKhoa }}</td>
+                                <td>{{ thietLap.namHoc.namHoc }}</td>
+                                <td>
+                                    {% if thietLap.hocKy %}
+                                        <center class="text-success">Học kỳ 1</center>
+                                    {% else %}
+                                        <center class="text-danger">Học kỳ 2</center>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if thietLap.trangThai %}
+                                        <center class="text-success">Mở đăng ký</center>
+                                    {% else %}
+                                        <center class="text-danger">Đóng đăng ký</center>
+                                    {% endif %}
+                                </td>
+                                <td style="text-align: center;">
+                                    <a href="{% url 'xemThietLapDangKy' thietLap.id %}">
+                                        <i class="fas fa-circle-info bigger-icon"></i>
+                                    </a>
+                                    <!-- <a href="{% url 'suaThietLapDangKy' thietLap.id %}">
+                                        <i class="fas fa-pen-to-square bigger-icon"></i>
+                                    </a> -->
+                                    <a href="{% url 'xoaThietLapDangKy' thietLap.id %}">
+                                        <i class="far fa-trash-alt bigger-icon"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+<script>
+    // Auto-close the alert after 3 seconds (3000 milliseconds)
+    setTimeout(() => {
+      document.getElementById('myAlert').remove();
+    }, 3000);
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#dataTable').DataTable({
+            language: {
+                searchPlaceholder: "Tìm kiếm",
+                search: "",
+                "sInfo": "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+                "sInfoEmpty": "Hiển thị 0 đến 0 của 0 mục",
+                "sInfoFiltered": "Lọc từ _MAX_ mục",
+                "sLengthMenu": "Hiện _MENU_ mục",
+                "sEmptyTable": "Không có dữ liệu",
+
+            },
+            stateSave: false,
+            dom: '<"clear"><"row"<"col"l><"col"f>>rt<"row"<"col"i><"col"p>><"row"<"col"B>>',
+            buttons: [
+                {
+                    extend: 'excel',
+                    exportOptions: {
+                        columns: ':not(:last-child)',
+                    }, title: ''
+                }, {
+                    extend: 'pdf',
+                    exportOptions: {
+                        columns: ':not(:last-child)',
+                    }, title: ''
+                }
+            ]
+        });
+    });
+
+    $(document).ready(function () {
+        $('.dataTables_filter input[type="search"]').css(
+            { 'width': '350px', 'display': 'inline-block', 'height': '40px' }
+        );
+    });
+</script>
+{% endblock %}

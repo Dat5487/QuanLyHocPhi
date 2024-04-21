@@ -75,9 +75,9 @@
                                 <td>{{ khoanThu.tenKhoan }}</td>
                                 <td>{{ khoanThu.soTien|intcomma|localize }}</td>
                                 <td style="text-align: center;">
-                                    <!-- <a href="{% url 'suaKhoanThuKhac' khoanThu.id %}">
+                                    <a href="{% url 'suaKhoanThuKhac' khoanThu.id %}">
                                         <i class="fas fa-pen-to-square bigger-icon"></i>
-                                    </a> -->
+                                    </a>
                                     <a href="{% url 'xoaKhoanThuKhac' khoanThu.id %}">
                                         <i class="far fa-trash-alt bigger-icon"></i>
                                     </a>

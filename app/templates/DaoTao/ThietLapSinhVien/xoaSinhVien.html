@@ -1,0 +1,43 @@
+{% extends "DaoTao/daoTaoBase.html" %}
+{% load static %}
+{% block title %}Xác nhận xóa sinh viên{% endblock %}
+{% block content %}
+
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h4 class="m-0 font-weight-bold text-primary">Xác nhận xóa sinh viên</h4>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <dl class="dl-horizontal">
+                <strong>Mã sinh viên</strong> : {{ sinhVien.maSV }}
+            </dl>
+            <dl class="dl-horizontal">
+                <strong>Họ tên</strong> : {{ sinhVien.hoTen }}
+            </dl>
+            <dl class="dl-horizontal">
+                <strong>Ngày sinh</strong> : {{ sinhVien.ngaySinh }}
+            </dl>
+            <dl class="dl-horizontal">
+                <strong>Quê quán</strong> : {{ sinhVien.queQuan }}
+            </dl>
+            <dl class="dl-horizontal">
+                <strong>Lớp</strong> : {{ sinhVien.lop.lop }}
+            </dl>
+            <dl class="dl-horizontal">
+                <strong>Khóa</strong> : {{ sinhVien.namKhoa }}
+            </dl>
+            <div class="form-group">
+                <div class="col-md-offset-2 ">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="submit" value="Xóa" class="btn btn-primary" />
+                        <a class="btn btn-danger" href="{% url 'listSinhVienLop' sinhVien.lop.id %}">Hủy</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

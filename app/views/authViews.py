@@ -3,17 +3,26 @@ from app.models import *
 from app.forms import *
 from django.contrib.auth import authenticate, login, logout, get_user_model
 
-def register(request):
-    maSinhVien = "dat548712"
-    password = "123456"
-    # Create a new user
-    CustomUser = get_user_model()
 
-    user = CustomUser.objects.create_user(username=maSinhVien, password=password,maSinhVien=maSinhVien,role="user")
+def register(request):
+    maSinhVien = "taichinh"
+    password = "taichinh"
+    CustomUser = get_user_model()
+    user = CustomUser.objects.create_user(username=maSinhVien, password=password,maSinhVien=maSinhVien,role="TaiChinh")
     user.save()
 
     # Redirect to a success page or login page
     return redirect(request, 'index.html')
+
+def home(request):
+    role = request.session.get('role')
+    if role == 'SinhVien':
+        return redirect('sinhVienHome')
+    elif role == 'DaoTao':
+        return redirect('daoTaoHome')
+    elif role == 'TaiChinh':
+        return redirect('taiChinhHome')
+    return redirect('login')
 
 def login_page(request):
     if request.method == 'POST':
@@ -23,10 +32,13 @@ def login_page(request):
         if user is not None:
             login(request, user)
             if user.role == 'TaiChinh':
+                request.session['role'] = 'TaiChinh'
                 return redirect('taiChinhHome')
-            elif user.role == 'CanBo':
-                return redirect('canBoHome')
+            elif user.role == 'DaoTao':
+                request.session['role'] = 'DaoTao'
+                return redirect('daoTaoHome')
             elif user.role == 'SinhVien':
+                request.session['role'] = 'SinhVien'
                 request.session['maSinhVien'] = username
                 return redirect('sinhVienHome')
         else:

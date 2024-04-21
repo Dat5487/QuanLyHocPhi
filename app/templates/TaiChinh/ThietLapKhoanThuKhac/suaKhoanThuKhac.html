@@ -11,45 +11,6 @@
       {% csrf_token %}
       <div class="row">
         <div class="col-6">
-          <div class="form-group mt-2">
-            <label class="fw-bold  ">Hệ đào tạo</label>
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text">
-                  <img class="custom-image-size" src="{% static 'images/hedaotao.png' %}" alt="Image">
-                </span>
-              </div>
-              <select class="form-control combobox" name="heDaoTao" id="heDaoTao" onchange="handleComboboxChange1()">
-                {% for value in cacHeDaoTao %}
-                {% if value == khoanThuKhac.heDaoTao %}
-                <option value="{{ value.id }}" selected>{{ value.tenHeDaoTao }}</option>
-                {% else %}
-                <option value="{{ value.id }}">{{ value.tenHeDaoTao }}</option>
-                {% endif %}
-                {% endfor %}
-              </select>
-            </div>
-          </div>
-          <div class="form-group mt-2">
-            <label class="fw-bold">Khoa</label>
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text">
-                  <img class="custom-image-size" src="{% static 'images/khoa.png' %}" alt="Image">
-                </span>
-              </div>
-              <select class="form-control combobox" name="khoa" id="khoa" onchange="handleComboboxChange1()">
-                <option value="">Tất cả các khoa</option>
-                {% for value in cacKhoa %}
-                {% if value == khoanThuKhac.khoa %}
-                <option value="{{ value.id }}" selected>{{ value.tenKhoa }}</option>
-                {% else %}
-                <option value="{{ value.id }}">{{ value.tenKhoa }}</option>
-                {% endif %}
-                {% endfor %}
-              </select>
-            </div>
-          </div>
 
           <div class="form-group mt-2">
             <label class="fw-bold  ">Tên khoản</label>
@@ -64,23 +25,9 @@
           </div>
 
           <div class="form-group mt-2">
-            <label class="fw-bold  ">Số tiền</label>
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text">
-                  <img class="custom-image-size" src="{% static 'images/muchocphi.png' %}" alt="Image">
-                </span>
-              </div>
-              <input type="text" class="form-control" name="soTien" id="currency-field" data-type="currency"
-                value="{{ soTien }}">
-            </div>
-          </div>
-
-          <div class="form-group mt-2">
             <label class="fw-bold  ">Nội dung</label>
             <textarea class="form-control" name="noiDung" rows="3">{{ khoanThuKhac.noiDung }}</textarea>
           </div>
-
         </div>
 
       </div>

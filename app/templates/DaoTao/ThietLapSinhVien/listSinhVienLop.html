@@ -1,0 +1,177 @@
+{% extends "DaoTao/daoTaoBase.html" %}
+{% load static %}
+{% load humanizelib %}
+{% load l10n %}
+{% block title %}Danh sách sinh viên trong lớp{% endblock %}
+{% block content %}
+<style>
+    .bigger-icon {
+        font-size: 1.2em;
+        color: #000;
+    }
+    
+    .bigger-icon a {
+        text-decoration: none;
+    }
+</style>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <div class="row">
+            <div class="col-7">
+                <h4 class="m-0 font-weight-bold text-primary">Danh sách sinh viên trong lớp : {{ lop.lop }}</h4>
+            </div>
+            <div class="col-5">
+                <a href="{% url 'listLopHoc' lop.nganhDaoTao.id %}"><button class = "btn btn-danger float-end" >Quay lại</button></a>
+                <a href="{% url 'newSinhVien' lop.id %}"><button class = "btn btn-success float-end me-1" >Thêm sinh viên</button></a>
+
+                <button type="button" class="btn btn-primary float-end me-1" data-bs-toggle="modal" data-bs-target="#myModal">
+                    <i class="fa fa-plus-circle"></i> Nhập File Excel
+                </button>
+                <div class="modal fade" id="myModal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Nhập File Excel</h4>
+                                <button type="button" class="close" data-bs-dismiss="modal">×</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <form method="post" enctype="multipart/form-data" action="{% url 'excelImportSinhVien' lop.id %}">
+                                            {% csrf_token %}
+                                            <div class="d-flex justify-content-center">
+                                                <input name="excel_file" type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" required />
+                                                <button class="btn btn-success" type="submit">Nhập</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Đóng</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        {% if alertContent == "Thêm" %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <strong>Thêm sinh viên vào lớp thành công!</strong>
+          </div>
+        {% endif %}
+        {% if alertContent == "Xóa" %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <strong>Xóa sinh viên thành công!</strong>
+          </div>
+        {% endif %}
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered" id="dataTable3" width="100%" cellspacing="0">
+                <thead>
+                    <th>
+                        Mã sinh viên
+                    </th>
+                    <th>
+                        Họ tên
+                    </th>
+                    <th>
+                        Giới tính
+                    </th>
+                    <th>
+                        Ngày sinh
+                    </th>
+                    <th>
+                        Quê quán
+                    </th>
+                    <th>
+                        Lớp
+                    </th>
+                    <th>
+                        Trạng thái
+                    </th>
+                    <th>
+                        Thao tác
+                    </th>
+                </thead>
+                <tbody>
+                    {% for sinhVien in listSinhVien %}
+                    <tr id="{{ sinhVien.id }}">
+                        <td>{{ sinhVien.maSV }}</td>
+                        <td>{{ sinhVien.hoTen }}</td>
+                        <td>{{ sinhVien.gioiTinh }}</td>
+                        <td>{{ sinhVien.ngaySinh }}</td>
+                        <td>{{ sinhVien.queQuan }}</td>
+                        <td>{{ sinhVien.lop.lop }}</td>
+                        <td>
+                            {% if sinhVien.trangThai %}
+                            <center class="text-success">Đang học</center>
+                            {% else %}
+                            <center class="text-danger">Nghỉ học</center>
+                            {% endif %}
+                        </td>
+                        <td style="text-align: center;">
+                            <a href="{% url 'xemSinhVien' sinhVien.id %}">
+                                <i class="fas fa-circle-info bigger-icon"></i>
+                            </a>
+                            <a href="{% url 'suaSinhVien' sinhVien.id %}">
+                                <i class="fas fa-pen-to-square bigger-icon"></i>
+                            </a>
+                            <a href="{% url 'xoaSinhVien' sinhVien.id %}">
+                                <i class="far fa-trash-alt bigger-icon"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    // Auto-close the alert after 3 seconds (3000 milliseconds)
+    setTimeout(() => {
+      document.getElementById('myAlert').remove();
+    }, 3000);
+</script>
+<script type="text/javascript">
+$('#dataTable3').DataTable({
+            language: {
+                searchPlaceholder: "Tìm kiếm",
+                search: "",
+                "sInfo": "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+                "sInfoEmpty": "Hiển thị 0 đến 0 của 0 mục",
+                "sInfoFiltered": "Lọc từ _MAX_ mục",
+                "sLengthMenu": "Hiện _MENU_ mục",
+                "sEmptyTable": "Không có dữ liệu",
+
+            },
+            stateSave: true,
+            dom: '<"clear"><"row"<"col"l><"col"f>>rt<"row"<"col"i><"col"p>><"row"<"col"B>>',
+            buttons: [
+                {
+                    extend: 'excel',
+                    exportOptions: {
+                        columns: ':not(:last-child)',
+                    }, title: ''
+                }, {
+                    extend: 'pdf',
+                    exportOptions: {
+                        columns: ':not(:last-child)',
+                    }, title: ''
+                }
+            ]
+        });
+$('.dataTables_filter input[type="search"]').css({
+    width: '350px',
+    display: 'inline-block',
+    height: '40px',
+});
+
+</script>
+{% endblock %}

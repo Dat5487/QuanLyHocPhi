@@ -8,8 +8,10 @@ from openpyxl.utils import get_column_letter
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Sum
 import urllib
-
+from openpyxl.styles import Alignment
 from app.views.utils.blockChain import Blockchain
+from django.db.models import ProtectedError
+
 
 @login_required
 def taiChinhHome(request):
@@ -63,15 +65,7 @@ def NewKhoanThuKhac(request):
 @login_required
 def SuaKhoanThuKhac(request, id):
     khoanThuKhac = get_object_or_404(KhoanThuKhac, id=id)
-    soTien = format(khoanThuKhac.soTien, ",.0f")
-
     if request.method == 'POST':
-        khoanThuKhac.heDaoTao = get_object_or_404(HeDaoTao, id=request.POST.get('heDaoTao'))
-        if request.POST.get('khoa') == "":
-            khoanThuKhac.khoa = None
-        else:
-            khoanThuKhac.khoa = get_object_or_404(Khoa, id=request.POST.get('khoa'))
-        khoanThuKhac.soTien = request.POST.get('soTien').replace(",", "")
         khoanThuKhac.noiDung = request.POST.get('noiDung')
         khoanThuKhac.tenKhoan = request.POST.get('tenKhoan')
         khoanThuKhac.save()
@@ -82,16 +76,17 @@ def SuaKhoanThuKhac(request, id):
         khoanThuKhac = KhoanThuKhac.objects.get(id=id)
         form = KhoanThuKhacForm()
 
-    cacHeDaoTao = HeDaoTao.objects.all().order_by('-id')
-    cacKhoa= Khoa.objects.all().order_by('-id')
-    return render(request, 'TaiChinh/ThietLapKhoanThuKhac/suaKhoanThuKhac.html', {'form': form,'khoanThuKhac': khoanThuKhac, 'cacHeDaoTao': cacHeDaoTao,'cacKhoa': cacKhoa,'soTien': soTien})
+    return render(request, 'TaiChinh/ThietLapKhoanThuKhac/suaKhoanThuKhac.html', {'form': form,'khoanThuKhac': khoanThuKhac})
 
 @login_required
 def XoaKhoanThuKhac(request, id):
     khoanThuKhac = get_object_or_404(KhoanThuKhac, id=id)
     soTien = format(khoanThuKhac.soTien, ",.0f")
     if request.method == 'POST':
-        khoanThuKhac.delete()
+        try:
+            khoanThuKhac.delete()
+        except ProtectedError:
+            return render(request, 'error.html')
         alert_content = 'Xóa'
         url = reverse('listKhoanThuKhac') + f'?alertContent={alert_content}'
         return redirect(url)
@@ -104,14 +99,24 @@ def ListLop(request):
     ListHeDaoTao = HeDaoTao.objects.all().order_by('-id')
     ListNganhDaoTao = NganhDaoTao.objects.all().order_by('-id')
     ListKhoa = Khoa.objects.all().order_by('-id')
-    ListKhoaHoc = KhoaHoc.objects.all().order_by('-id')
+    ListNamKhoa = [1,2,3,4,5,6,7,8]
     ListLop = Lop.objects.all().order_by('-id')
+    namKhoadict = {}
+
+    for nganh_dao_tao in ListNganhDaoTao:
+        namKhoa = 0
+        id = nganh_dao_tao.id
+        for lop in ListLop:
+            if lop.nganhDaoTao == nganh_dao_tao and lop.namKhoa > namKhoa:
+                namKhoa = lop.namKhoa
+        namKhoadict[nganh_dao_tao.id] = namKhoa
+
     if request.method == 'POST':
         loaiBaoCao = request.POST.get('loaiBaoCao')
         if loaiBaoCao == 'tongHop':
             BaoCaoTongHop()
 
-    return render(request, 'TaiChinh/KhoanThu/chonLop.html', {'ListHeDaoTao': ListHeDaoTao, 'ListNganhDaoTao': ListNganhDaoTao, 'ListKhoa': ListKhoa, 'ListKhoaHoc': ListKhoaHoc, 'ListLop': ListLop})
+    return render(request, 'TaiChinh/KhoanThu/chonLop.html', {'ListHeDaoTao': ListHeDaoTao, 'ListNganhDaoTao': ListNganhDaoTao, 'ListKhoa': ListKhoa, 'ListNamKhoa': ListNamKhoa, 'ListLop': ListLop, 'namKhoadict': namKhoadict})
 
 @login_required
 def ListSinhVien(request,id):
@@ -234,25 +239,36 @@ def ChonBaoCao(request):
 
     if request.method == 'POST':
         loaiBaoCao = request.POST.get('loaiBaoCao')
+        namBatDau = request.POST.get('namBatDau')
+        namKetThuc = request.POST.get('namKetThuc')
         if loaiBaoCao == 'Báo cáo học phí tổng hợp':
-            return BaoCaoTongHop()
+            return BaoCaoTongHop(namBatDau,namKetThuc)
         elif loaiBaoCao == 'Báo cáo học phí tổng hợp theo lớp':
             lop = request.POST.get('lop')
-            return BaoCaoTongHopTheoLop(lop)
+            return BaoCaoTongHopTheoLop(lop,namBatDau,namKetThuc)
         elif loaiBaoCao == 'Báo cáo công nợ học phí sinh viên':
-            return BaoCaoCongNoSinhVien()
+            return BaoCaoCongNoSinhVien(namBatDau,namKetThuc)
         elif loaiBaoCao == 'Báo cáo công nợ học phí sinh viên theo lớp':
             lop = request.POST.get('lop')
-            return BaoCaoCongNoTheoLop(lop)
+            return BaoCaoCongNoTheoLop(lop,namBatDau,namKetThuc)
 
     return render(request, 'TaiChinh/BaoCaoThu/chonBaoCao.html', {'cacHeDaoTao': cacHeDaoTao, 'cacNganhDaoTao': cacNganhDaoTao, 'cacKhoa': cacKhoa, 'cacNamHoc': cacNamHoc, 'cacKhoaHoc': cacKhoaHoc, 'cacLop': cacLop, 'cacLoaiBaoCao': cacLoaiBaoCao})
 
-def BaoCaoTongHop():
+from openpyxl import Workbook
+from openpyxl.utils import get_column_letter
+from openpyxl.drawing.image import Image
+from django.http import HttpResponse
+import urllib.parse
+
+def BaoCaoTongHop(namBatDau,namKetThuc):
     ListKhoa = Khoa.objects.all().order_by('-id')
     workbook = Workbook()
     worksheet = workbook.active
+    namHocKetXuat =  namBatDau + "-" + namKetThuc
+    start_range = f"{namBatDau}-{int(namBatDau) + 1}"
+    end_range = f"{int(namKetThuc) - 1}-{namKetThuc}"
     for khoa in ListKhoa:
-        queryset = ThanhToanHocPhi.objects.filter(sinhVien__lop__khoa=khoa).order_by('sinhVien__maSV')
+        queryset = ThanhToanHocPhi.objects.filter(sinhVien__lop__khoa=khoa).filter(hocPhanDuocXetDuyet__hocPhanDaDangKy__namHoc__namHoc__range=(start_range, end_range)).order_by('sinhVien__maSV')
         worksheet = workbook.create_sheet(title=khoa.tenKhoa)
         column_names = ['Mã sinh viên', 'Họ tên', 'Ngày sinh','Tên lớp','Năm học','Kỳ học','Số tiền phải nộp','Trạng thái']
         for col_num, column_name in enumerate(column_names, 1):
@@ -287,12 +303,18 @@ def BaoCaoTongHop():
             for col_num, value in enumerate(row, 1):
                 cell = worksheet.cell(row=row_num, column=col_num)
                 cell.value = value
-        
+                
         # Adjust the column widths to auto-stretch after populating the data
         for column_cells in worksheet.columns:
             length = max(len(str(cell.value)) for cell in column_cells)
-            column_letter = column_cells[0].column_letter
+            column_letter = get_column_letter(column_cells[0].column)
             worksheet.column_dimensions[column_letter].width = length + 2
+
+        worksheet.insert_rows(1)
+        worksheet['A1'] = 'Báo cáo tổng hợp học phí khoa ' + khoa.tenKhoa + ' - Năm học ' + namHocKetXuat
+        worksheet.merge_cells('A1:H1')
+        merged_cell = worksheet['A1']
+        merged_cell.alignment = Alignment(horizontal='center')
     
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     filename = urllib.parse.quote('Báo cáo tổng hợp.xlsx')
@@ -302,10 +324,13 @@ def BaoCaoTongHop():
     return response
 
 
-def BaoCaoTongHopTheoLop(lopId):
+def BaoCaoTongHopTheoLop(lopId,namBatDau,namKetThuc):
     lopDuocChon = get_object_or_404(Lop, id=lopId)
-    listNamHoc = NamHoc.objects.all().order_by('-id')
-    name = 'Báo cáo tổng hợp theo lớp '+ lopDuocChon.lop +' .xlsx'
+    namHocKetXuat =  namBatDau + "-" + namKetThuc
+    start_range = f"{namBatDau}-{int(namBatDau) + 1}"
+    end_range = f"{int(namKetThuc) - 1}-{namKetThuc}"
+    listNamHoc = NamHoc.objects.filter(namHoc__range=(start_range, end_range)).order_by('-id')
+    name = 'Báo cáo tổng hợp theo lớp '+ lopDuocChon.lop + ' - Năm học '+ namHocKetXuat +'.xlsx'
     filename = urllib.parse.quote(name)
     workbook = Workbook()
     worksheet = workbook.active
@@ -353,6 +378,12 @@ def BaoCaoTongHopTheoLop(lopId):
             column_letter = column_cells[0].column_letter
             worksheet.column_dimensions[column_letter].width = length + 2
 
+        worksheet.insert_rows(1)
+        worksheet['A1'] = 'Báo cáo tổng hợp học phí lớp ' + lopDuocChon.lop + " - Năm học "+ namHoc.namHoc + " - Học kỳ 1"
+        worksheet.merge_cells('A1:H1')
+        merged_cell = worksheet['A1']
+        merged_cell.alignment = Alignment(horizontal='center')
+
         queryset = ThanhToanHocPhi.objects.filter(Q(hocPhanDuocXetDuyet__hocPhanDaDangKy__namHoc=namHoc) & Q(hocPhanDuocXetDuyet__hocPhanDaDangKy__hocKy=0) & Q(sinhVien__lop=lopDuocChon)).order_by('sinhVien__maSV')
         worksheet = workbook.create_sheet(title=namHoc.namHoc + " - Học kỳ 2")
         column_names = ['Mã sinh viên', 'Họ tên', 'Ngày sinh','Tên lớp','Năm học','Kỳ học','Số tiền phải nộp','Trạng thái']
@@ -396,18 +427,27 @@ def BaoCaoTongHopTheoLop(lopId):
             column_letter = column_cells[0].column_letter
             worksheet.column_dimensions[column_letter].width = length + 2
 
+        worksheet.insert_rows(1)
+        worksheet['A1'] = 'Báo cáo tổng hợp học phí lớp ' + lopDuocChon.lop + " - Năm học "+ namHoc.namHoc + " - Học kỳ 2"
+        worksheet.merge_cells('A1:H1')
+        merged_cell = worksheet['A1']
+        merged_cell.alignment = Alignment(horizontal='center')
+
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     workbook.remove(workbook['Sheet'])
     workbook.save(response)
     return response
 
-def BaoCaoCongNoSinhVien():
+def BaoCaoCongNoSinhVien(namBatDau,namKetThuc):
     ListKhoa = Khoa.objects.all().order_by('-id')
+    namHocKetXuat =  namBatDau + "-" + namKetThuc
+    start_range = f"{namBatDau}-{int(namBatDau) + 1}"
+    end_range = f"{int(namKetThuc) - 1}-{namKetThuc}"
     workbook = Workbook()
     worksheet = workbook.active
     for khoa in ListKhoa:
-        queryset = ThanhToanHocPhi.objects.filter(sinhVien__lop__khoa=khoa).order_by('sinhVien__maSV').filter(trangThai=0)
+        queryset = ThanhToanHocPhi.objects.filter(sinhVien__lop__khoa=khoa).filter(hocPhanDuocXetDuyet__hocPhanDaDangKy__namHoc__namHoc__range=(start_range, end_range)).order_by('sinhVien__maSV').filter(trangThai=0)
         aggregate_queryset = queryset.values('sinhVien__maSV','sinhVien__hoTen','sinhVien__ngaySinh','sinhVien__lop__lop',).annotate(sum_soTien=Sum('soTien'))
         worksheet = workbook.create_sheet(title=khoa.tenKhoa)
         column_names = ['Mã sinh viên', 'Họ tên', 'Ngày sinh','Tên lớp','Số tiền chưa nộp']
@@ -437,18 +477,27 @@ def BaoCaoCongNoSinhVien():
             length = max(len(str(cell.value)) for cell in column_cells)
             column_letter = column_cells[0].column_letter
             worksheet.column_dimensions[column_letter].width = length + 2
+        
+        worksheet.insert_rows(1)
+        worksheet['A1'] = 'Báo cáo tổng hợp công nợ học phí sinh viên khoa ' + khoa.tenKhoa + ' - Năm học ' + namHocKetXuat
+        worksheet.merge_cells('A1:E1')
+        merged_cell = worksheet['A1']
+        merged_cell.alignment = Alignment(horizontal='center')
     
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    filename = urllib.parse.quote('Báo cáo công nợ sinh viên.xlsx')
+    filename = urllib.parse.quote('Báo cáo công nợ sinh viên - Năm học '+ namHocKetXuat +'.xlsx')
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     workbook.remove(workbook['Sheet'])
     workbook.save(response)
     return response
 
-def BaoCaoCongNoTheoLop(lopId):
+def BaoCaoCongNoTheoLop(lopId,namBatDau,namKetThuc):
+    namHocKetXuat =  namBatDau + "-" + namKetThuc
+    start_range = f"{namBatDau}-{int(namBatDau) + 1}"
+    end_range = f"{int(namKetThuc) - 1}-{namKetThuc}"
     lopDuocChon = get_object_or_404(Lop, id=lopId)
-    listNamHoc = NamHoc.objects.all().order_by('-id')
-    name = 'Báo cáo công nợ sinh viên theo lớp '+ lopDuocChon.lop +' .xlsx'
+    listNamHoc = NamHoc.objects.filter(namHoc__range=(start_range, end_range)).order_by('-id')
+    name = 'Báo cáo công nợ sinh viên theo lớp '+ lopDuocChon.lop + ' - Năm học '+ namHocKetXuat +'.xlsx'
     filename = urllib.parse.quote(name)
     workbook = Workbook()
     worksheet = workbook.active
@@ -483,6 +532,12 @@ def BaoCaoCongNoTheoLop(lopId):
             column_letter = column_cells[0].column_letter
             worksheet.column_dimensions[column_letter].width = length + 2
 
+        worksheet.insert_rows(1)
+        worksheet['A1'] = 'Báo cáo công nợ học phí lớp '+ lopDuocChon.lop + " - Năm học "+ namHoc.namHoc + " - Học kỳ 1"
+        worksheet.merge_cells('A1:E1')
+        merged_cell = worksheet['A1']
+        merged_cell.alignment = Alignment(horizontal='center')
+
         queryset = ThanhToanHocPhi.objects.filter(Q(hocPhanDuocXetDuyet__hocPhanDaDangKy__namHoc=namHoc) & Q(hocPhanDuocXetDuyet__hocPhanDaDangKy__hocKy=0) & Q(sinhVien__lop=lopDuocChon)).order_by('sinhVien__maSV').filter(trangThai=0)
         aggregate_queryset = queryset.values('sinhVien__maSV','sinhVien__hoTen','sinhVien__ngaySinh','sinhVien__lop__lop',).annotate(sum_soTien=Sum('soTien'))
         worksheet = workbook.create_sheet(title=namHoc.namHoc + " - Học kỳ 2")
@@ -513,6 +568,11 @@ def BaoCaoCongNoTheoLop(lopId):
             column_letter = column_cells[0].column_letter
             worksheet.column_dimensions[column_letter].width = length + 2
 
+        worksheet.insert_rows(1)
+        worksheet['A1'] = 'Báo cáo công nợ học phí lớp '+ lopDuocChon.lop + " - Năm học "+ namHoc.namHoc + " - Học kỳ 2"
+        worksheet.merge_cells('A1:E1')
+        merged_cell = worksheet['A1']
+        merged_cell.alignment = Alignment(horizontal='center')
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     workbook.remove(workbook['Sheet'])
@@ -593,7 +653,9 @@ def XemKeHoachThu(request, id):
 @login_required
 def ListLichSuThanhToan(request,id):
    sinhVien = get_object_or_404(SinhVien, id=id)
-   listLichSuHocPhi = BlockChain.objects.filter(maSinhVien = sinhVien.maSV, maThanhToan__icontains="HP").order_by('index')
-   listLichSuKhac = BlockChain.objects.filter(maSinhVien = sinhVien.maSV, maThanhToan__icontains="K").order_by('index')
+   listLichSuHocPhi = BlockChain.objects.filter(maSinhVien = sinhVien.maSV, maThanhToan__icontains="HP").order_by('-id')
+   listLichSuKhac = BlockChain.objects.filter(maSinhVien = sinhVien.maSV, maThanhToan__icontains="K").order_by('-id')
    return render(request, 'TaiChinh/KhoanThu/listLichSuThanhToan.html', {'listLichSuHocPhi': listLichSuHocPhi,'listLichSuKhac': listLichSuKhac,'sinhVien': sinhVien})
+
+
 

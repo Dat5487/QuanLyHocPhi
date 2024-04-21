@@ -1,8 +1,8 @@
-{% extends "CanBo/canBoBase.html" %}
+{% extends "DaoTao/daoTaoBase.html" %}
 {% load static %}
 {% load humanizelib %}
 {% load l10n %}
-{% block title %}Danh sách thiết lập đăng ký học phần{% endblock %}
+{% block title %}Danh sách lớp{% endblock %}
 {% block content %}
 
 
@@ -20,10 +20,10 @@
         <div class="card-header py-3">
             <div class="row">
                 <div class="col-9">
-                    <h4 class="m-0 font-weight-bold text-primary">Danh sách thiết lập đăng ký học phần</h4>
+                    <h4 class="m-0 font-weight-bold text-primary">Danh sách lớp trong ngành: {{ nganhDaoTao.tenNganhDaoTao }}</h4>
                 </div>
                 <div class="col-3">
-                    <a href="{% url 'newThietLapDangKy' %}"><button class = "btn btn-success float-end" >Thêm thiết lập đăng ký</button></a>
+                    <a href="{% url 'newLop' nganhDaoTao.id %}"><button class = "btn btn-success float-end" >Thêm lớp</button></a>
                 </div>
             </div>
         </div>
@@ -31,71 +31,46 @@
             {% if alertContent == "Thêm" %}
             <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                <strong>Thêm thiết lập mới thành công!</strong>
-              </div>
-            {% endif %}
-            {% if alertContent == "Sửa" %}
-            <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                <strong>Sửa thiết lập thành công!</strong>
+                <strong>Thêm lớp mới thành công!</strong>
               </div>
             {% endif %}
             {% if alertContent == "Xóa" %}
             <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                <strong>Xóa thiết lập thành công!</strong>
+                <strong>Xóa lớp thành công!</strong>
               </div>
             {% endif %}
             <div class="table-responsive mt-3">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                     <th>
-                        Ngành đào tạo
+                        Hệ đào tạo
+                    </th>
+                    <th>
+                        Khoa
+                    </th>
+                    <th>
+                        Tên lớp
                     </th>
                     <th>
                         Khóa
-                    </th>
-                    <th>
-                        Năm học
-                    </th>
-                    <th>
-                        Học kỳ
-                    </th>
-                    <th>
-                        Trạng thái
                     </th>
                     <th>
                         Thao tác
                     </th>
                     </thead>
                     <tbody>
-                        {% for thietLap in listThietLap %}
-                            <tr id="{{ thietLap.id }}">
-                                <td>{{ thietLap.nganhDaoTao.tenNganhDaoTao }}</td>
-                                <td>Khóa {{ thietLap.namKhoa }}</td>
-                                <td>{{ thietLap.namHoc.namHoc }}</td>
-                                <td>
-                                    {% if thietLap.hocKy %}
-                                        <center class="text-success">Học kỳ 1</center>
-                                    {% else %}
-                                        <center class="text-danger">Học kỳ 2</center>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if thietLap.trangThai %}
-                                        <center class="text-success">Mở đăng ký</center>
-                                    {% else %}
-                                        <center class="text-danger">Đóng đăng ký</center>
-                                    {% endif %}
-                                </td>
+                        {% for lop in listLopHoc %}
+                            <tr id="{{ lop.id }}">
+                                <td>{{ lop.heDaoTao.tenHeDaoTao }}</td>
+                                <td>{{ lop.khoa.tenKhoa }}</td>
+                                <td>{{ lop.lop }}</td>
+                                <td>Khóa {{ lop.namKhoa  }}</td>
                                 <td style="text-align: center;">
-                                    <a href="{% url 'xemThietLapDangKy' thietLap.id %}">
+                                    <a href="{% url 'listSinhVienLop' lop.id %}">
                                         <i class="fas fa-circle-info bigger-icon"></i>
                                     </a>
-                                    <!-- <a href="{% url 'suaThietLapDangKy' thietLap.id %}">
-                                        <i class="fas fa-pen-to-square bigger-icon"></i>
-                                    </a> -->
-                                    <a href="{% url 'xoaThietLapDangKy' thietLap.id %}">
+                                    <a href="{% url 'xoaLop' lop.id %}">
                                         <i class="far fa-trash-alt bigger-icon"></i>
                                     </a>
                                 </td>

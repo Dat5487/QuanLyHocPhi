@@ -71,7 +71,7 @@ class Blockchain:
             nonce_str = str(nonce)
             hash = self.calculate_hash(index, timestamp, maSinhVien, maThanhToan, soTien, noiDung, soGiaoDich, ketQua,
                                        previous_hash, nonce_str)
-            if hash.startswith('00'):  # Adjust the required number of leading zeroes as per your needs
+            if hash.startswith('0'):  # Adjust the required number of leading zeroes as per your needs
                 return nonce_str
             nonce += 1
             time.sleep(0.01)  # Add a small delay to avoid excessive CPU usage

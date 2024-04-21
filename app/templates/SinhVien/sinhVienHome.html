@@ -2,8 +2,42 @@
 {% load static %}
 {% load humanizelib %}
 {% load l10n %}
-{% block title %}Thêm thiết lập học phần được đăng ký{% endblock %}
+{% block title %}Trường Đại học Hạ Long{% endblock %}
 {% block content %}
+
+<link rel="stylesheet" href="{% static 'css/styles2.css' %}">
+
+<div class="team-boxed">
+    <center class="fs-3 fw-bold pt-5">Hệ thống thanh toán học phí dành cho Sinh viên</center>
+
+  <div class="row people px-5">
+    <div class="col-md-6 col-lg-6 item">
+      <div class="box">
+        <img src="{% static 'images/hocphi.png' %}">
+        <h3 class="name">Học phí</h3>
+        <p class="title"></p>
+        {% if soHocPhi == 0 %}
+            <p class="description">Hiện tại bạn đã hoàn thành tất cả khoản thu học phí</p>
+        {% else %}
+            <p class="description">Hiện tại bạn có {{ soHocPhi }} chưa hoàn thành</p>
+        {% endif %}
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-6 item">
+      <div class="box">
+        <img src="{% static 'images/transaction.png' %}">
+        <h3 class="name">Khoản thu khác</h3>
+        <p class="title"></p>
+        {% if soKhoanThuKhac == 0 %}
+            <p class="description">Hiện tại bạn đã hoàn thành tất cả khoản thu khác</p>
+        {% else %}
+            <p class="description">Hiện tại bạn có {{ soKhoanThuKhac }} khoản thu khác chưa hoàn thành</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+<hr />
 
 
 {% endblock %}

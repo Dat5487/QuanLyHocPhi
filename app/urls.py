@@ -8,11 +8,12 @@ urlpatterns = [
    path('register/', register, name="register"),
    path('login/', login_page, name='login'),
    path('logout/', logout_view, name='logout'),
+   path('', home, name='home'),
 
    #---------------------------------------------------------------------------
    #--------------------------------Cán Bộ-------------------------------------
    #---------------------------------------------------------------------------
-   path('canBoHome', CanBoHome,name="canBoHome"),
+   path('daoTaoHome', DaoTaoHome,name="daoTaoHome"),
 
    path('listThietLapDangKy/', login_required(ListThietLapDangKy), name="listThietLapDangKy"),
    path('thietLapDangKy/<int:id>/detail/', login_required(XemThietLapDangKy), name='xemThietLapDangKy'),
@@ -23,6 +24,25 @@ urlpatterns = [
    path('listXetDuyetDangKy/', login_required(ListXetDuyetDangKy), name="listXetDuyetDangKy"),
    path('xetDuyetDangKy/<int:id>', login_required(XetDuyetDangKy), name="xetDuyetDangKy"),
    path('huyDangKy/<int:id>', login_required(HuyDangKy), name="huyDangKy"),
+
+   path('dropListNganhDaoTao/', login_required(DropListNganhDaoTao), name="dropListNganhDaoTao"),
+   path('listLopHoc/<int:id>/', login_required(ListLopHoc), name="listLopHoc"),
+   path('newLop/<int:id>/', login_required(NewLop), name="newLop"),
+   path('xoaLop/<int:id>/', login_required(XoaLop), name="xoaLop"),
+
+   path('listSinhVienLop/<int:id>/', login_required(ListSinhVienLop), name="listSinhVienLop"),
+   path('xemSinhVien/<int:id>/', login_required(XemSinhVien), name="xemSinhVien"),
+   path('newSinhVien/<int:id>/', login_required(NewSinhVien), name="newSinhVien"),
+   path('suaSinhVien/<int:id>/', login_required(SuaSinhVien), name="suaSinhVien"),
+   path('xoaSinhVien/<int:id>/', login_required(XoaSinhVien), name="xoaSinhVien"),
+
+   path('listHocPhan/', login_required(ListHocPhan), name="listHocPhan"),
+   path('hocPhan/newHocPhan/', login_required(NewHocPhan), name='newHocPhan'),
+   path('hocPhan/<int:id>/update/', login_required(SuaHocPhan), name='suaHocPhan'),
+   path('hocPhan/<int:id>/delete/', login_required(XoaHocPhan), name='xoaHocPhan'),
+
+   path('excelImportSinhVien/<int:id>/', login_required(ExcelImportSinhVien), name="excelImportSinhVien"),
+   path('excelImportHocPhan//', login_required(ExcelImportHocPhan), name="excelImportHocPhan"),
 
    #-----------------------------------------------------------------------------
    #-------------------------------Tài Chính-------------------------------------
@@ -55,6 +75,8 @@ urlpatterns = [
    path('khoanThuKhac/newKhoanThuKhac/', login_required(NewKhoanThuKhac), name='newKhoanThuKhac'),
    path('khoanThuKhac/<int:id>/update/', login_required(SuaKhoanThuKhac), name='suaKhoanThuKhac'),
    path('khoanThuKhac/<int:id>/delete/', login_required(XoaKhoanThuKhac), name='xoaKhoanThuKhac'),
+
+
 
    #-----------------------------------------------------------------------------
    #-------------------------------Sinh viên-------------------------------------
