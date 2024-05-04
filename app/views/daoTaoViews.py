@@ -5,6 +5,7 @@ from app.forms import *
 from django.contrib.auth.decorators import login_required
 import pandas as pd
 from django.contrib.auth import  get_user_model
+from django.db.models import ProtectedError
 
 @login_required
 def DaoTaoHome(request):
@@ -87,10 +88,14 @@ def XoaThietLapDangKy(request, id):
     tongSoTin = sum(hocPhan.soTinChi for hocPhan in xemThietLap)
     tongSoTien = sum(hocPhan.soTien for hocPhan in xemThietLap)
     if request.method == 'POST':
-        thietLapDangKy.delete()
-        alert_content = 'Xóa'
-        url = reverse('listThietLapDangKy') + f'?alertContent={alert_content}'
-        return redirect(url)
+        try:
+            thietLapDangKy.delete()
+            alert_content = 'Xóa'
+            url = reverse('listThietLapDangKy') + f'?alertContent={alert_content}'
+            return redirect(url)
+        except ProtectedError:
+            return render(request, 'error.html')
+
 
     return render(request, 'DaoTao/HocPhan/xoaThietLapDangKy.html', {'thietLapDangKy': thietLapDangKy,'tongSoTin':tongSoTin,'tongSoTien':tongSoTien})
 
@@ -164,10 +169,13 @@ def XoaLop(request, id):
     lop = get_object_or_404(Lop, id=id)
     idNganhDaoTao = lop.nganhDaoTao.id
     if request.method == 'POST':
-        lop.delete()
-        alert_content = 'Xóa'
-        url = reverse('listLopHoc', args=[idNganhDaoTao]) + f'?alertContent={alert_content}'
-        return redirect(url)
+        try:
+            lop.delete()
+            alert_content = 'Xóa'
+            url = reverse('listLopHoc', args=[idNganhDaoTao]) + f'?alertContent={alert_content}'
+            return redirect(url)
+        except ProtectedError:
+            return render(request, 'error.html')
 
     return render(request, 'DaoTao/ThietLapSinhVien/ThietLapLop/xoaLop.html', {'lop': lop})
 
@@ -191,6 +199,10 @@ def NewSinhVien(request,id):
         form = SinhVienForm(request.POST)
         if form.is_valid():
             form.save()
+            maSV = request.POST.get('maSV')
+            CustomUser = get_user_model()
+            user = CustomUser.objects.create_user(username=maSV, password=maSV,maSinhVien=maSV,role="SinhVien")
+            user.save()
             alert_content = 'Thêm'
             url = reverse('listSinhVienLop', args=[id]) + f'?alertContent={alert_content}'
             return redirect(url)
@@ -223,12 +235,16 @@ def XoaSinhVien(request, id):
     sinhVien = get_object_or_404(SinhVien, id=id)
     idLop = sinhVien.lop.id
     if request.method == 'POST':
-        sinhVien.delete()
-        user = get_object_or_404(CustomUser, username = sinhVien.maSV)
-        user.delete()
-        alert_content = 'Xóa'
-        url = reverse('listSinhVienLop', args=[idLop]) + f'?alertContent={alert_content}'
-        return redirect(url)
+        try:
+            sinhVien.delete()
+            user = get_object_or_404(CustomUser, username = sinhVien.maSV)
+            user.delete()
+            alert_content = 'Xóa'
+            url = reverse('listSinhVienLop', args=[idLop]) + f'?alertContent={alert_content}'
+            return redirect(url)
+        except ProtectedError:
+            return render(request, 'error.html')
+
     return render(request, 'DaoTao/ThietLapSinhVien/xoaSinhVien.html', {'sinhVien': sinhVien})
 
 def ExcelImportSinhVien(request,id):
@@ -326,9 +342,12 @@ def XoaHocPhan(request, id):
     hocPhan = get_object_or_404(HocPhan, id=id)
     soTien = format(hocPhan.soTien, ",.0f")
     if request.method == 'POST':
-        hocPhan.delete()
-        alert_content = 'Xóa'
-        url = reverse('listHocPhan') + f'?alertContent={alert_content}'
-        return redirect(url)
+        try:
+            hocPhan.delete()
+            alert_content = 'Xóa'
+            url = reverse('listHocPhan') + f'?alertContent={alert_content}'
+            return redirect(url)
+        except ProtectedError:
+            return render(request, 'error.html')
 
     return render(request, 'DaoTao/ThietLapHocPhan/xoaHocPhan.html', {'hocPhan': hocPhan, 'soTien': soTien})

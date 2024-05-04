@@ -158,7 +158,7 @@
                       <!-- Replace with the path to your image -->
                     </span>
                   </div>
-                  <select class="form-control combobox" name="tenNganh" id="tenNganh" onchange="handleComboboxChange1()"
+                  <select class="form-control combobox" name="tenNganh" id="tenNganh"
                     required>
                     <option value=""></option>
                     {% for value in cacNganhDaoTao %}
@@ -181,7 +181,7 @@
                       <img class="custom-image-size" src="{% static 'images/khoahoc.png' %}" alt="Image">
                     </span>
                   </div>
-                  <input class="form-control"id="namKhoa" name="namKhoa" value="" onchange="handleComboboxChange1()">
+                  <input class="form-control"id="namKhoa" name="namKhoa" value="" onchange="onKhoaNhapHocChange()">
                 </div>
               </div>
             </div>
@@ -294,18 +294,18 @@
         cmbNamHoc.disabled = false;
       }
   }
+  var cmbHeDaoTao = document.getElementById('heDaoTao');
+  var cmbNganhDaoTao = document.getElementById('tenNganh');
+  var cmbKhoa = document.getElementById('khoa');
+  var inputNamKhoa = document.getElementById('namKhoa');
+  var cmbNamHoc = document.getElementById('namHoc');
+  var cmbLop = document.getElementById('lop');
+
   function handleComboboxChange1() {
-    var cmbHeDaoTao = document.getElementById('heDaoTao');
-    var cmbNganhDaoTao = document.getElementById('tenNganh');
-    var cmbKhoa = document.getElementById('khoa');
-    var inputNamKhoa = document.getElementById('namKhoa');
-    var cmbNamHoc = document.getElementById('namHoc');
-    var cmbLop = document.getElementById('lop');
     var selectedHeDaoTao = cmbHeDaoTao.value;
     var selectedKhoa = cmbKhoa.value;
-    
     cmbNganhDaoTao.innerHTML = '';
-    
+
     {% for value in cacNganhDaoTao %}
       if ("{{ value.heDaoTao.tenHeDaoTao }}" == selectedHeDaoTao && "{{ value.khoa.tenKhoa }}" == selectedKhoa) {
         var newOption = document.createElement('option');
@@ -315,6 +315,12 @@
       }
     {% endfor %}
     
+
+  }
+  function onKhoaNhapHocChange() {
+
+    var selectedHeDaoTao = cmbHeDaoTao.value;
+    var selectedKhoa = cmbKhoa.value;
     var selectedNganhDaoTao = cmbNganhDaoTao.value;
     var selectedNamKhoa = inputNamKhoa.value;
     cmbLop.innerHTML = '';
@@ -327,8 +333,8 @@
         cmbLop.appendChild(newOption);
       }
     {% endfor %}
-  }
 
+  }
 </script>
 <script>
   function updateSecondSelect() {

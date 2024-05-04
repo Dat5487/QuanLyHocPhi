@@ -85,11 +85,11 @@ def XoaKhoanThuKhac(request, id):
     if request.method == 'POST':
         try:
             khoanThuKhac.delete()
+            alert_content = 'Xóa'
+            url = reverse('listKhoanThuKhac') + f'?alertContent={alert_content}'
+            return redirect(url)
         except ProtectedError:
             return render(request, 'error.html')
-        alert_content = 'Xóa'
-        url = reverse('listKhoanThuKhac') + f'?alertContent={alert_content}'
-        return redirect(url)
 
     return render(request, 'TaiChinh/ThietLapKhoanThuKhac/xoaKhoanThuKhac.html', {'khoanThuKhac': khoanThuKhac,'soTien': soTien})
 
