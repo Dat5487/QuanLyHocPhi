@@ -9,7 +9,11 @@ Giao diện cán bộ quản lý học phần:
 
 ![image](https://github.com/Dat5487/QuanLyHocPhi/assets/109160535/33d3717c-cccc-4601-90d8-1965834271cd)
 
+![image](https://github.com/user-attachments/assets/30b99743-ec9e-40d0-b604-16a130cf30ce)
+
 ![image](https://github.com/Dat5487/QuanLyHocPhi/assets/109160535/b1c16a58-7e0a-4918-90ee-7d81c2f661af)
+
+![image](https://github.com/user-attachments/assets/d6d22958-94d6-4ae7-807f-a87e8efa7207)
 
 Giao diện cán bộ quản lý tài chính:
 ![image](https://github.com/Dat5487/QuanLyHocPhi/assets/109160535/b8967b6b-54ea-45e7-8473-1ad24a92e633)
