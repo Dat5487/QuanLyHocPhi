@@ -1,3 +1,8 @@
+Demo sản phẩm: [thanhtoanuhl](http://thanhtoanuhl.us.to/)
+Tài khoản - Mật khẩu:
+Cán bộ phòng đào tạo: daotao
+Cán bộ quản lý tài chính: taichinh
+Sinh viên: 20DH03007
 Một số giao diện web
 
 Giao diện đăng nhập
