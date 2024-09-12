@@ -1,0 +1,105 @@
+{% extends 'tai_chinh/tai_chinh_base.html' %}
+{% load static %}
+{% block title %}Danh sách khoản thu{% endblock %}
+{% block content %}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h4 class="m-0 font-weight-bold text-primary">Danh sách khoản thu</h4>
+    </div>
+    <div class="card-body">
+        <nav class="sb-sidenav accordion sb-sidenav-light" id="sidenavAccordion">
+            <div class="sb-sidenav-menu">
+                <div class="nav">
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="" data-bs-target="#a" aria-expanded="false" aria-controls="collapsePages">
+                        <div class="sb-nav-link-icon"><img class="custom-image-size" src="{% static 'images/khoanthu.png' %}"></div>
+                        Danh sách khoản thu
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+                    <div class="" id="a" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                            <hr/>
+                            <h6>Danh sách hệ đào tạo</h6>
+                            {% for study_program in study_program_list %}
+                                <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#idHeDaoTao{{ study_program.id }}" aria-expanded="false" aria-controls="collapsePages">
+                                    <div class="sb-nav-link-icon"><img class="custom-image-size" src="{% static 'images/hedaotao.png' %}"></div>
+                                    {{ study_program.study_program_name }}
+                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                </a>
+                                <div class="collapse" id="idHeDaoTao{{ study_program.id }}" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                                    <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                        <hr/>
+                                        <h6>Danh sách khoa</h6>
+                                        {% for faculty in faculty_list %}
+                                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#idKhoa{{ study_program.id }}{{ faculty.id }}" aria-expanded="false" aria-controls="collapsePages">
+                                                <div class="sb-nav-link-icon"><img class="custom-image-size" src="{% static 'images/khoa.png' %}"></i></div>
+                                                {{ faculty.faculty_name }}
+                                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                            </a>
+                                            <div class="collapse" id="idKhoa{{ study_program.id }}{{ faculty.id }}" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                                                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                                    <hr/>
+                                                    <h6>Danh sách ngành đào tạo</h6>
+                                                    {% for major in major_list %}
+                                                        {% if major.faculty == faculty and major.study_program == study_program %}
+                                                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#idNganhDaoTao{{ study_program.id }}{{ faculty.id }}{{ major.id }}" aria-expanded="false" aria-controls="collapsePages">
+                                                        <div class="sb-nav-link-icon"><img class="custom-image-size" src="{% static 'images/nganhdaotao.png' %}"></div>
+                                                        {{ major.major_name }}
+                                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                                        </a>
+                                                            <div class="collapse" id="idNganhDaoTao{{ study_program.id }}{{ faculty.id }}{{ major.id }}" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                                                                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                                                    <hr/>
+                                                                    <h6>Danh sách khóa</h6>
+                                                                    {% for key, value in enrollment_batch_dict.items %} 
+                                                                        {% if key == major.id %}
+                                                                            {% with ''|center:value as range %}
+                                                                                {% for _ in range %}
+                                                                                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#idNamKhoa{{ study_program.id }}{{ faculty.id }}{{ major.id }}{{ forloop.counter }}" aria-expanded="false" aria-controls="collapsePages">
+                                                                                        <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                                                                                        Khóa {{ forloop.counter }}
+                                                                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                                                                    </a>
+                                                                                    <div class="collapse" id="idNamKhoa{{ study_program.id }}{{ faculty.id }}{{ major.id }}{{ forloop.counter }}" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                                                                                        <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                                                                            <hr/>
+                                                                                            <h6>Danh sách lớp</h6>
+                                                                                            {% with namKhoax=forloop.counter %}
+                                                                                            {% for class_name in class_list %}
+                                                                                                
+                                                                                                {% if class_name.enrollment_batch == namKhoax and class_name.study_program == study_program and class_name.major == major %}
+                                                                                                    <a class="nav-link collapsed" href="{% url 'student_list' class_name.id %}" >
+                                                                                                        <div class="sb-nav-link-icon"><img class="custom-image-size" src="{% static 'images/lop.png' %}"></div>
+                                                                                                        {{ class_name.class_name }}
+                                                                                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                                                                                    </a>
+                                                                                                    
+                                                                                                {% endif %}
+                                                                                            {%  endfor %}
+                                                                                            {% endwith %}
+                                                                                        </nav>
+                                                                                    </div>
+                                                                                {% endfor %}
+                                                                            {% endwith %}
+                                                                        {%  endif %}
+                                                                    {% endfor %}
+                                                                </nav>
+                                                            </div>
+                                                        {% endif %}
+                                                    {%  endfor %}
+                                                </nav>
+                                            </div>
+                                        {%  endfor %}
+                                    </nav>
+                                </div>
+                            {%  endfor %}
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+
+{% endblock %}

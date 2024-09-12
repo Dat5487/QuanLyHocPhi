@@ -1,0 +1,118 @@
+{% extends "dao_tao/dao_tao_base.html" %}
+{% load static %}
+{% load humanizelib %}
+{% load l10n %}
+{% block title %}Danh sách thiết lập đăng ký{% endblock %}
+{% block content %}
+
+
+  <div class="card shadow mb-4">
+      <div class="card-header py-3">
+          <div class="row">
+              <div class="col-9">
+                  <h4 class="m-0 font-weight-bold text-primary">Danh sách học phần được phép đăng ký</h4>
+              </div>
+          </div>
+      </div>
+      <div class="card-body">
+        <dl class="dl-horizontal">
+          <strong>Hệ đào tạo: </strong> : {{ registration_preset.major.study_program.study_program_name }}
+        </dl>
+        <dl class="dl-horizontal">
+          <strong>Faculty: </strong> : {{ registration_preset.major.faculty.faculty_name }}
+        </dl>
+        <dl class="dl-horizontal">
+          <strong>Tên ngành: </strong> : {{ registration_preset.major.major_name }}
+        </dl>
+        <dl class="dl-horizontal">
+          <strong>Khóa: </strong> : {{ registration_preset.enrollment_batch }}
+        </dl>
+        <dl class="dl-horizontal">
+          <strong>Năm học: </strong> : {{ registration_preset.class_year.class_year }}
+        </dl>
+        <dl class="dl-horizontal">
+          {% if registration_preset.semester == True  %}
+            <strong>Học kỳ: </strong> : 1
+          {% else %}
+            <strong>Học kỳ: </strong> : 2
+          {% endif %}
+        </dl>
+
+          <div class="table-responsive mt-3">
+              <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                  <thead>
+                  <th>
+                      Mã học phần
+                  </th>
+                  <th>
+                      Tên học phần
+                  </th>
+                  <th>
+                      Số tín chỉ
+                  </th>
+                  <th>
+                      Số tiền
+                  </th>
+                  </thead>
+                  <tbody>
+
+                      {% for hocPhan in all_preset %}
+                          <tr id="{{ hocPhan.id }}">
+                              <td>{{ hocPhan.course_id }}</td>
+                              <td>{{ hocPhan.course_name }}</td>
+                              <td>{{ hocPhan.course_credit }}</td>
+                              <td>{{ hocPhan.payment_amount|intcomma|localize }}</td>
+                          </tr>
+                      {% endfor %}
+
+                  </tbody>
+              </table>
+              <!-- <label class="float-end">Số tiền : {{ total_payment_amount|intcomma|localize }}</label> -->
+          </div>
+          <div class="row mt-2">
+                  <label><strong>Tổng số tín chỉ :	</strong><label id="total_course_credit">{{ total_course_credit }}</label></label>
+          </div>
+          <div class="row mt-2">
+                  <label><strong>Tổng số tiền :	</strong><label id="total_payment_amount">{{ total_payment_amount|intcomma|localize }}</label></label>
+          </div>
+          <hr/>
+          <form method="POST" action="{% url 'detail_preset' registration_preset.id %}">
+          {% csrf_token %}
+          <div class="row">
+            <div class="form-group mt-2">
+              <label class="fw-bold  ">Trạng thái</label>
+              <br />
+              {% if registration_preset.status == True %}
+              <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="status" id="trangThai1" value="1" checked>
+                  <label class="form-check-label" for="trangThai1">Mở đăng ký</label>
+              </div>
+              <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="status" id="trangThai2" value="0">
+                  <label class="form-check-label" for="trangThai2">Đóng đăng ký</label>
+              </div>
+              {% else %}
+              <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="status" id="trangThai1" value="1">
+                  <label class="form-check-label" for="trangThai1">Mở đăng ký</label>
+              </div>
+              <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="status" id="trangThai2" value="0" checked>
+                  <label class="form-check-label" for="trangThai2">Đóng đăng ký</label>
+              </div>
+              {%  endif %}
+          </div>
+          </div>
+          <button type="submit" class="btn btn-primary mt-3">Xác nhận</button>
+          <a class="btn btn-danger mt-3" href="{% url 'course_registration_preset_list' %}">Hủy</a>
+        </form>
+      </div>
+  </div>
+
+<script>
+    window.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('total_payment_amount').textContent = "{{ total_payment_amount|intcomma|localize }}".toLocaleString() + " (" + to_vietnamese("{{ total_payment_amount }}").charAt(0).toUpperCase() + to_vietnamese("{{ total_payment_amount }}").slice(1) + ")";
+    });
+</script>
+
+{% endblock %}

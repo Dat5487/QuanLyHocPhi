@@ -1,0 +1,76 @@
+{% extends "dao_tao/dao_tao_base.html" %}
+{% load static %}
+{% load humanizelib %}
+{% load l10n %}
+{% block title %}Danh sách lớp{% endblock %}
+{% block content %}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <div class="row">
+            <div class="col-9">
+                <h4 class="m-0 font-weight-bold text-primary">Danh sách lớp trong ngành: {{ major.major_name }}</h4>
+            </div>
+            <div class="col-3">
+                <a href="{% url 'new_class' major.id %}"><button class = "btn btn-success float-end" >Thêm lớp</button></a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        {% if alert_content == "Create" %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <strong>Thêm lớp mới thành công!</strong>
+            </div>
+        {% endif %}
+        {% if alert_content == "Delete" %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <strong>Xóa lớp thành công!</strong>
+            </div>
+        {% endif %}
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                <th>
+                    Hệ đào tạo
+                </th>
+                <th>
+                    Faculty
+                </th>
+                <th>
+                    Tên lớp
+                </th>
+                <th>
+                    Khóa
+                </th>
+                <th>
+                    Thao tác
+                </th>
+                </thead>
+                <tbody>
+                    {% for class_name in class_list %}
+                        <tr id="{{ class_name.id }}">
+                            <td>{{ class_name.study_program.study_program_name }}</td>
+                            <td>{{ class_name.faculty.faculty_name }}</td>
+                            <td>{{ class_name.class_name }}</td>
+                            <td>Khóa {{ class_name.enrollment_batch  }}</td>
+                            <td style="text-align: center;">
+                                <a href="{% url 'class_student_list' class_name.id %}">
+                                    <i class="fas fa-circle-info bigger-icon"></i>
+                                </a>
+                                <a href="{% url 'delete_class' class_name.id %}">
+                                    <i class="far fa-trash-alt bigger-icon"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="{% static 'js/datatable.js' %}"></script>
+<script src="{% static 'js/alert.js' %}"></script>
+
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends "dao_tao/dao_tao_base.html" %}
+{% load static %}
+{% block title %}Sửa sinh viên{% endblock %}
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h4 class="m-0 font-weight-bold text-primary">Sửa thông tin sinh viên</h4>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{% url 'edit_student' student.id %}">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group mt-2">
+                        <label class="fw-bold">Lớp</label>
+                        <select class="form-control combobox" data-live-search="true" name="class_name">
+                            {% for value in class_list %}
+                            {% if value == student.student_class %}
+                            <option value="{{ value.id }}" selected>{{ value.class_name }}</option>
+                            {% else %}
+                            <option value="{{ value.id }}">{{ value.class_name }}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group mt-2">
+                        <label class="fw-bold  ">Mã sinh viên</label>
+                        <input class="form-control" name="student_id" value="{{ student.student_id }}" disabled></input>
+                    </div>
+                    <div class="form-group mt-2">
+                        <label class="fw-bold  ">Họ tên</label>
+                        <input class="form-control" name="student_name" value="{{ student.student_name }}" disabled></input>
+                    </div>
+                    <div class="row">
+                        <div class="form-group mt-2">
+                            <label class="fw-bold  ">Giới tính</label>
+                            <br />
+                            {% if student.gender == "Nam" %}
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="gender" id="Nam" value="Nam" checked>
+                                <label class="form-check-label" for="Nam">Nam</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="gender" id="Nu" value="Nữ">
+                                <label class="form-check-label" for="Nu">Nữ</label>
+                            </div>
+                            {% else %}
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="gender" id="Nam" value="Nam">
+                                <label class="form-check-label" for="Nam">Nam</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="gender" id="Nu" value="Nữ" checked>
+                                <label class="form-check-label" for="Nu">Nữ</label>
+                            </div>
+                            {%  endif %}
+                        </div>
+                    </div>
+                    <div class="form-group mt-2">
+                        <label class="fw-bold  ">Quê quán</label>
+                        <input class="form-control" name="home_town" value="{{ student.home_town }}" required></input>
+                    </div>
+                    <div class="form-group mt-2">
+                        <label class="fw-bold  ">Ngày sinh</label>
+                        <input class="form-control" type="date" name="birth_date" value="{{ student.birth_date|date:'Y-m-d' }}" required />
+                    </div>
+                    <div class="row">
+                        <div class="form-group mt-2">
+                            <label class="fw-bold">Trạng thái</label>
+                            <br />
+                            {% if student.status == True %}
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="status" id="trangThai1" value="1" checked>
+                                <label class="form-check-label" for="trangThai1">Đang học</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="status" id="trangThai0" value="0">
+                                <label class="form-check-label" for="trangThai0">Nghỉ học</label>
+                            </div>
+                            {% else %}
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="status" id="trangThai1" value="1">
+                                <label class="form-check-label" for="trangThai1">Đang học</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="status" id="trangThai0" value="0" checked>
+                                <label class="form-check-label" for="trangThai0">Nghỉ học</label>
+                            </div>
+                            {%  endif %}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Xác nhận</button>
+            <a class="btn btn-danger mt-3" href="{% url 'student_list' student.student_class.id %}">Hủy</a>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

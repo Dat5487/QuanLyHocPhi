@@ -1,0 +1,36 @@
+{% extends "dao_tao/dao_tao_base.html" %}
+{% load static %}
+{% load humanizelib %}
+{% load l10n %}
+{% block title %}Xem thông tin sinh viên{% endblock %}
+{% block content %}
+
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h4 class="m-0 font-weight-bold text-primary">Xem thông tin sinh viên</h4>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <dl class="dl-horizontal">
+                <strong>Mã sinh viên</strong> : {{ student.student_id }}
+            </dl>
+            <dl class="dl-horizontal">
+                <strong>Họ tên</strong> : {{ student.student_name }}
+            </dl>
+            <dl class="dl-horizontal">
+                <strong>Ngày sinh</strong> : {{ student.birth_date }}
+            </dl>
+            <dl class="dl-horizontal">
+                <strong>Quê quán</strong> : {{ student.home_town }}
+            </dl>
+            <dl class="dl-horizontal">
+                <strong>Lớp</strong> : {{ student.student_class.class_name }}
+            </dl>
+            <dl class="dl-horizontal">
+                <strong>Khóa</strong> : {{ student.enrollment_batch }}
+            </dl>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "dao_tao/dao_tao_base.html" %}
+{% load static %}
+{% block title %}Xác nhận xóa lớp{% endblock %}
+{% block content %}
+
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h4 class="m-0 font-weight-bold text-primary">Xác nhận xóa lớp</h4>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <dl class="dl-horizontal">
+                <dt>
+                    Hệ đào tạo
+                </dt>
+                <dd>
+                    {{ class_name.study_program.study_program_name }}
+                </dd>
+            </dl>
+            <dl class="dl-horizontal">
+                <dt>
+                    Ngành đào tạo
+                </dt>
+                <dd>
+                    {{ class_name.major.major_name }}
+                </dd>
+            </dl>
+            <dl class="dl-horizontal">
+                <dt>
+                    Faculty
+                </dt>
+                <dd>
+                    {{ class_name.faculty.faculty_name }}
+                </dd>
+            </dl>
+            <dl class="dl-horizontal">
+                <dt>
+                    Tên lớp
+                </dt>
+                <dd>
+                    {{ class_name.class_name }}
+                </dd>
+            </dl>
+            <dl class="dl-horizontal">
+                <dt>
+                    Khóa
+                </dt>
+                <dd>
+                    {{ class_name.enrollment_batch }}
+                </dd>
+            </dl>
+            <div class="form-group">
+                <div class="col-md-offset-2 ">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="submit" value="Xóa" class="btn btn-primary" />
+                        <a class="btn btn-danger" href="{% url 'class_list' class_name.major.id %}">Hủy</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

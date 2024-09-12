@@ -1,0 +1,60 @@
+{% extends "dao_tao/dao_tao_base.html" %}
+{% load static %}
+{% block title %}Thêm sinh viên{% endblock %}
+{% block content %}
+<div class="card shadow mb-4">
+  <div class="card-header py-3">
+      <h4 class="m-0 font-weight-bold text-primary">Thêm sinh viên</h4>
+  </div>
+  <div class="card-body">
+    <form method="POST" action="{% url 'create_student' class_name.id %}">
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-6">
+            <div class="form-group mt-2">
+                <label class="fw-bold  ">Lớp</label>
+                <input class="form-control" value="{{ class_name.class_name }}" disabled></input>
+                <input class="form-control" name="class_name" value="{{ class_name.id }}" hidden></input>
+            </div>
+            <div class="form-group mt-2">
+                <label class="fw-bold  ">Mã sinh viên</label>
+                <input class="form-control" name="student_id" required></input>
+            </div>
+            <div class="form-group mt-2">
+                <label class="fw-bold  ">Họ tên</label>
+                <input class="form-control" name="student_name" required></input>
+            </div>
+            <div class="row">
+              <div class="form-group mt-2">
+                <label class="fw-bold  ">Giới tính</label>
+                <br />
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="gender" id="Nam" value="Nam" required>
+                  <label class="form-check-label" for="Nam">Nam</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="gender" id="Nu" value="Nữ" required>
+                  <label class="form-check-label" for="Nu">Nữ</label>
+                </div>
+              </div>
+          </div>
+            <div class="form-group mt-2">
+                <label class="fw-bold  ">Quê quán</label>
+                <input class="form-control" name="home_town" required></input>
+            </div>
+            <div class="form-group mt-2">
+                <label class="fw-bold  ">Ngày sinh</label>
+                <input class="form-control" type="date" name="birth_date" required/>
+            </div>
+
+            <input class="form-control" name="status" value="1" hidden/>
+            <input class="form-control" name="enrollment_batch" value="{{ class_name.enrollment_batch }}" hidden/>
+            <button type="submit" class="btn btn-primary mt-3">Xác nhận</button>
+            <a class="btn btn-danger mt-3" href="{% url 'class_student_list' class_name.id %}">Hủy</a>
+          </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

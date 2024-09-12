@@ -1,0 +1,121 @@
+{% extends 'tai_chinh/tai_chinh_base.html' %}
+{% load static %}
+{% block title %}Sửa thiết lập khoản thu{% endblock %}
+{% block content %}
+<div class="card shadow mb-4">
+  <div class="card-header py-3">
+    <h4 class="m-0 font-weight-bold text-primary">Sửa thiết lập khoản thu</h4>
+  </div>
+  <div class="card-body">
+    <form method="POST" action="{% url 'edit_plan_preset' other_collection_plan.id %}">
+      {% csrf_token %}
+      <div class="row">
+        <div class="col-6">
+
+          <div class="form-group mt-2">
+            <label class="fw-bold  ">Tên khoản</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <img class="custom-image-size" src="{% static 'images/khoanThu.png' %}" alt="Image">
+                </span>
+              </div>
+            <input class="form-control" name="payment_name" value="{{ other_collection_plan.payment_name }}"></input>
+            </div>
+          </div>
+
+          <div class="form-group mt-2">
+            <label class="fw-bold  ">Nội dung</label>
+            <textarea class="form-control" name="description" rows="3">{{ other_collection_plan.description }}</textarea>
+          </div>
+        </div>
+
+      </div>
+      <button type="submit" class="btn btn-primary mt-3">Xác nhận</button>
+      <a class="btn btn-danger mt-3" href="{% url 'preset_list' %}">Hủy</a>
+    </form>
+  </div>
+</div>
+<script>
+    $("input[data-type='currency']").on({
+        keyup: function() {
+        formatCurrency($(this));
+        },
+        blur: function() { 
+        formatCurrency($(this), "blur");
+        }
+    });
+
+
+    function formatNumber(n) {
+    return n.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    }
+
+
+    function formatCurrency(input, blur) {
+    var input_val = input.val();
+    if (input_val === "") { return; }
+    var original_len = input_val.length;
+    var caret_pos = input.prop("selectionStart");
+    if (input_val.indexOf(".") >= 0) {
+        var decimal_pos = input_val.indexOf(".");
+        var left_side = input_val.substring(0, decimal_pos);
+        var right_side = input_val.substring(decimal_pos);
+        left_side = formatNumber(left_side);
+        right_side = formatNumber(right_side);
+        if (blur === "blur") {
+        right_side += "00";
+        }
+        right_side = right_side.substring(0, 2);
+        input_val = left_side + "." + right_side;
+    } else {
+        input_val = formatNumber(input_val);
+        input_val = input_val ;
+    }
+    input.val(input_val);
+    var updated_len = input_val.length;
+    caret_pos = updated_len - original_len + caret_pos;
+    input[0].setSelectionRange(caret_pos, caret_pos);
+    }
+
+    function handleComboboxChange1() {
+      var cmb_study_program = document.getElementById('study_program');
+      var cmb_major = document.getElementById('tenNganh');
+      var cmb_faculty = document.getElementById('faculty');
+      var selected_study_program = cmb_study_program.value;
+      var selected_faculty = cmb_faculty.value;
+      
+      cmb_major.innerHTML = '';
+      
+      {% for value in majors %}
+        if ("{{ value.study_program.study_program_name }}" == selected_study_program && "{{ value.faculty.faculty_name }}" == selected_faculty) {
+          var newOption = document.createElement('option');
+          newOption.value = "{{ value.major_name }}";
+          newOption.textContent = "{{ value.major_name }}";
+          cmb_major.appendChild(newOption);
+        }
+      {% endfor %}
+      var cmbKhoaHoc = document.getElementById('year');
+      var cmb_major = document.getElementById('tenNganh');
+      var cmbLop = document.getElementById('class_name');
+      var selectedNganhDaoTao = cmb_major.value;
+      
+      cmbLop.innerHTML = '';
+      
+      {% for value in student_classes %}
+        if ("{{ value.major.major_name }}" == selectedNganhDaoTao) {
+          var newOption = document.createElement('option');
+          newOption.value = "{{ value.class_name }}";
+          newOption.textContent = "{{ value.class_name }}";
+          if ("{{ value.class_name }}" == "{{ mucHocPhi.class_name }}") {
+            newOption.selected = true;
+          }
+          
+          cmbLop.appendChild(newOption);
+        }
+      {% endfor %}
+    }
+    window.onload = handleComboboxChange1()
+  </script>
+  
+{% endblock %}

@@ -1,0 +1,319 @@
+{% extends 'tai_chinh/tai_chinh_base.html' %}
+{% load static %}
+{% load humanizelib %}
+{% load l10n %}
+{% block title %}Báo cáo thu{% endblock %}
+{% block content %}
+
+<div class="card shadow mb-4">
+  <div class="card-header py-3">
+    <div class="row">
+      <div class="col-9">
+        <h4 class="m-0 font-weight-bold text-primary">Chọn báo cáo</h4>
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    <form method="POST" action="{% url 'select_report' %}">
+      {% csrf_token %}
+      <div class="row ">
+        <div class="col-2"></div>
+        <div class="col-8" >
+          <div class="form-group mt-2">
+            <div class="row">
+              <div class="col-3 mt-2">
+                <center class="fw-bold fs-5">Loại báo cáo</center>
+              </div>
+              <div class="col-9">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <img class="custom-image-size" src="{% static 'images/report.png' %}" alt="Image">
+                    </span>
+                  </div>
+                  <select class="form-control combobox" name="report_type" id="report_type" onchange="SelectReport()"
+                    required>
+                    <option value=""></option>
+                    {% for value in report_types %}
+                    <option value="{{ value }}">{{ value }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group mt-2">
+            <div class="row">
+              <div class="col-3 mt-2">
+                <center class="fw-bold fs-5">Năm học</center>
+              </div>
+              <div class="col-4">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <img class="custom-image-size" src="{% static 'images/namhoc.png' %}" alt="Image">
+                    </span>
+                  </div>
+                  <select class="form-control combobox" id="start_year" name="start_year" onchange="updateSecondSelect()" required>
+                    <option value=""></option>
+                    <option value="2020">2020</option>
+                    <option value="2021">2021</option>
+                    <option value="2022">2022</option>
+                    <option value="2023">2023</option>
+                    <option value="2024">2024</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-1">
+                <center class="fw-bold fs-5">Đến</center>
+              </div>
+              <div class="col-4">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <img class="custom-image-size" src="{% static 'images/namhoc.png' %}" alt="Image">
+                    </span>
+                  </div>
+                <select class="form-control combobox" id="end_year" name="end_year" required>
+                  <option value=""></option>
+                </select>
+                </div>
+            </div>
+            </div>
+          </div>
+
+          <div class="form-group mt-2">
+            <div class="row">
+              <div class="col-3 mt-2">
+                <center class="fw-bold fs-5">Hệ đào tạo</center>
+              </div>
+              <div class="col-9">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <img class="custom-image-size" src="{% static 'images/hedaotao.png' %}" alt="Image">
+                    </span>
+                  </div>
+                  <select class="form-control combobox" name="study_program" id="study_program" onchange="handleComboboxChange1()"
+                    required>
+                    <option value=""></option>
+                    {% for value in study_programs %}
+                    <option value="{{ value.study_program_name }}">{{ value.study_program_name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group mt-2">
+            <div class="row">
+              <div class="col-3 mt-2">
+                <center class="fw-bold fs-5">Faculty</center>
+              </div>
+              <div class="col-9">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <img class="custom-image-size" src="{% static 'images/khoa.png' %}" alt="Image">
+                    </span>
+                  </div>
+                  <select class="form-control combobox" name="faculty" id="faculty" onchange="handleComboboxChange1()"
+                    required>
+                    <option value=""></option>
+                    {% for value in faculties %}
+                    <option value="{{ value.faculty_name }}">{{ value.faculty_name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group mt-2">
+            <div class="row">
+              <div class="col-3 mt-2">
+                <center class="fw-bold fs-5">Ngành đào tạo</center>
+              </div>
+              <div class="col-9">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <img class="custom-image-size" src="{% static 'images/nganhdaotao.png' %}" alt="Image">
+                    </span>
+                  </div>
+                  <select class="form-control combobox" name="tenNganh" id="tenNganh"
+                    required>
+                    <option value=""></option>
+                    {% for value in majors %}
+                    <option value="{{ value.major_name }}">{{ value.major_name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group mt-2">
+            <div class="row">
+              <div class="col-3 mt-2">
+                <center class="fw-bold fs-5">Khóa nhập học</center>
+              </div>
+              <div class="col-9">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <img class="custom-image-size" src="{% static 'images/khoahoc.png' %}" alt="Image">
+                    </span>
+                  </div>
+                  <input class="form-control"id="enrollment_batch" name="enrollment_batch" value="" onchange="onKhoaNhapHocChange()">
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group mt-2">
+            <div class="row">
+              <div class="col-3 mt-2">
+                <center class="fw-bold fs-5">Lớp</center>
+              </div>
+              <div class="col-9">
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <img class="custom-image-size" src="{% static 'images/lop.png' %}" alt="Image">
+                    </span>
+                  </div>
+                  <select class="form-control combobox" name="class_name" id="class_name" required>
+                    <option value=""></option>
+                    {% for value in student_classes %}
+                    <option value="{{ value.class_name }}">{{ value.class_name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <center><button type="submit" class="btn btn-lg btn-primary mt-5">Xác nhận</button></center>
+        </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function SelectReport(){
+    var selectElement = document.getElementById("report_type");
+    var selectedValue = selectElement.value;
+    var cmbLop = document.getElementById('class_name');
+    var cmb_study_program = document.getElementById('study_program');
+    var cmb_major = document.getElementById('tenNganh');
+    var cmb_faculty = document.getElementById('faculty');
+    var cmbKhoaHoc = document.getElementById('year');
+    var cmbNamHoc = document.getElementById('class_year');
+    var inputNamKhoa = document.getElementById('enrollment_batch');
+
+      var inputElement = document.getElementById("myInput");
+
+      if (selectedValue === "Báo cáo học phí tổng hợp") {
+        cmb_study_program.disabled = true;
+        cmb_major.disabled = true;
+        cmb_faculty.disabled = true;
+        inputNamKhoa.disabled = true;
+        cmbLop.disabled = true; 
+        cmbNamHoc.disabled = true;
+      }
+      else if (selectedValue === "Báo cáo học phí tổng hợp theo lớp") {
+        cmb_study_program.disabled = false;
+        cmb_major.disabled = false;
+        cmb_faculty.disabled = false;
+        inputNamKhoa.disabled = false;
+        cmbLop.disabled = false;
+        cmbNamHoc.disabled = true;
+      }
+      else if (selectedValue === "Báo cáo công nợ học phí sinh viên") {
+        cmb_study_program.disabled = true;
+        cmb_major.disabled = true;
+        cmb_faculty.disabled = true;
+        inputNamKhoa.disabled = true;
+        cmbLop.disabled = true;
+        cmbNamHoc.disabled = true;
+      }
+      else if (selectedValue === "Báo cáo công nợ học phí sinh viên theo lớp") {
+        cmb_study_program.disabled = false;
+        cmb_major.disabled = false;
+        cmb_faculty.disabled = false;
+        inputNamKhoa.disabled = false;
+        cmbLop.disabled = false;
+        cmbNamHoc.disabled = true;
+      }
+      else {
+        cmb_study_program.disabled = false;
+        cmb_major.disabled = false;
+        cmb_faculty.disabled = false;
+        inputNamKhoa.disabled = false;
+        cmbLop.disabled = false;
+        cmbNamHoc.disabled = false;
+      }
+  }
+  var cmb_study_program = document.getElementById('study_program');
+  var cmb_major = document.getElementById('tenNganh');
+  var cmb_faculty = document.getElementById('faculty');
+  var inputNamKhoa = document.getElementById('enrollment_batch');
+  var cmbNamHoc = document.getElementById('class_year');
+  var cmbLop = document.getElementById('class_name');
+
+  function handleComboboxChange1() {
+    var selected_study_program = cmb_study_program.value;
+    var selected_faculty = cmb_faculty.value;
+    cmb_major.innerHTML = '';
+
+    {% for value in majors %}
+      if ("{{ value.study_program.study_program_name }}" == selected_study_program && "{{ value.faculty.faculty_name }}" == selected_faculty) {
+        var newOption = document.createElement('option');
+        newOption.value = "{{ value.major_name }}";
+        newOption.textContent = "{{ value.major_name }}";
+        cmb_major.appendChild(newOption);
+      }
+    {% endfor %}
+  }
+  function onKhoaNhapHocChange() {
+    var selected_study_program = cmb_study_program.value;
+    var selected_faculty = cmb_faculty.value;
+    var selectedNganhDaoTao = cmb_major.value;
+    var selectedNamKhoa = inputNamKhoa.value;
+    cmbLop.innerHTML = '';
+    
+    {% for value in student_classes %}
+      if ("{{ value.major.major_name }}" == selectedNganhDaoTao && "{{ value.enrollment_batch }}" == selectedNamKhoa) {
+        var newOption = document.createElement('option');
+        newOption.value = "{{ value.id }}";
+        newOption.textContent = "{{ value.class_name }}";
+        cmbLop.appendChild(newOption);
+      }
+    {% endfor %}
+
+  }
+</script>
+<script>
+  function updateSecondSelect() {
+    const firstSelect = document.getElementById('start_year');
+    const secondSelect = document.getElementById('end_year');
+
+    // Clear existing options
+    secondSelect.innerHTML = '<option value=""></option>';
+
+    if (firstSelect.value !== '') {
+      const currentYear = new Date().getFullYear();
+      const selectedYear = parseInt(firstSelect.value);
+
+      for (let year = selectedYear + 1; year <= currentYear; year++) {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        secondSelect.appendChild(option);
+      }
+    }
+  }
+</script>
+{% endblock %}

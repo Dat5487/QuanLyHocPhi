@@ -1,0 +1,100 @@
+{% extends "dao_tao/dao_tao_base.html" %}
+{% load static %}
+{% load humanizelib %}
+{% load l10n %}
+{% block title %}Danh sách thiết lập đăng ký học phần{% endblock %}
+{% block content %}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <div class="row">
+            <div class="col-9">
+                <h4 class="m-0 font-weight-bold text-primary">Danh sách thiết lập đăng ký học phần</h4>
+            </div>
+            <div class="col-3">
+                <a href="{% url 'new_preset' %}"><button class = "btn btn-success float-end" >Thêm thiết lập đăng ký</button></a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        {% if alert_content == "Create" %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <strong>Thêm thiết lập mới thành công!</strong>
+            </div>
+        {% endif %}
+        {% if alert_content == "Edit" %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <strong>Sửa thiết lập thành công!</strong>
+            </div>
+        {% endif %}
+        {% if alert_content == "Delete" %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <strong>Xóa thiết lập thành công!</strong>
+            </div>
+        {% endif %}
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                <th>
+                    Ngành đào tạo
+                </th>
+                <th>
+                    Khóa
+                </th>
+                <th>
+                    Năm học
+                </th>
+                <th>
+                    Học kỳ
+                </th>
+                <th>
+                    Trạng thái
+                </th>
+                <th>
+                    Thao tác
+                </th>
+                </thead>
+                <tbody>
+                    {% for thietLap in preset_list %}
+                        <tr id="{{ thietLap.id }}">
+                            <td>{{ thietLap.major.major_name }}</td>
+                            <td>Khóa {{ thietLap.enrollment_batch }}</td>
+                            <td>{{ thietLap.class_year.class_year }}</td>
+                            <td>
+                                {% if thietLap.semester %}
+                                    <center class="text-success">Học kỳ 1</center>
+                                {% else %}
+                                    <center class="text-danger">Học kỳ 2</center>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if thietLap.status %}
+                                    <center class="text-success">Mở đăng ký</center>
+                                {% else %}
+                                    <center class="text-danger">Đóng đăng ký</center>
+                                {% endif %}
+                            </td>
+                            <td style="text-align: center;">
+                                <a href="{% url 'detail_preset' thietLap.id %}">
+                                    <i class="fas fa-circle-info bigger-icon"></i>
+                                </a>
+                                <!-- <a href="{% url 'edit_preset' thietLap.id %}">
+                                    <i class="fas fa-pen-to-square bigger-icon"></i>
+                                </a> -->
+                                <a href="{% url 'delete_preset' thietLap.id %}">
+                                    <i class="far fa-trash-alt bigger-icon"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="{% static 'js/datatable.js' %}"></script>
+
+{% endblock %}

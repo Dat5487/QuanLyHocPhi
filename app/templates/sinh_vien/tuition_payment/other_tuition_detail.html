@@ -1,0 +1,67 @@
+{% extends "sinh_vien/sinh_vien_base.html" %}
+{% load static %}
+{% load humanizelib %}
+{% load l10n %}
+{% block title %}Xem khoản thu{% endblock %}
+{% block content %}
+
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h4 class="m-0 font-weight-bold text-primary">Xem khoản thu</h4>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <dl class="dl-horizontal">
+                <strong>Mã sinh viên</strong> : {{ other_tuition_payment.student.student_id }}
+            </dl>
+            <dl class="dl-horizontal">
+                <strong>Họ tên</strong> : {{ other_tuition_payment.student.student_name }}
+            </dl>
+            <dl class="dl-horizontal">
+                <strong>Khoản thu</strong> : {{ other_tuition_payment.other_collection_plan.payment_name }}
+            </dl>
+            <dl class="dl-horizontal">
+                {% if other_tuition_payment.end_date == none %}
+                    <strong>Hạn nộp</strong> : Không có hạn
+                {% else %}
+                    <strong>Hạn nộp</strong> : {{ other_tuition_payment.end_date }}
+                {% endif %}
+            </dl>
+            <dl class="dl-horizontal">
+                <strong>Tổng số tiền</strong> : {{ other_tuition_payment.payment_amount|intcomma|localize }}
+            </dl>
+            <dl class="dl-horizontal">
+                <dt>
+                    Nội dung thu : 
+                </dt>
+                <dd>
+                    {% if other_tuition_payment.detail == none %}
+                        Không có nội dung
+                    {% else %}
+                        {{ other_tuition_payment.detail }}
+                    {% endif %}
+                </dd>
+            </dl>
+        </div>
+        <div class="row">
+            <center>
+
+                {% if other_tuition_payment.status  %}
+                    <button type="submit" class="btn btn-success ms-2 submit" disabled>
+                        <img class="custom-image-size me-1" src="{% static 'images/approved2.png' %}" alt="Icon" class="btn-icon">
+                        Đã thanh toán
+                    </button>
+                {% else %}
+                    <a href="{% url 'other_tuition_payment_id' other_tuition_payment.id %}">
+                        <button type="submit" class="btn btn-primary ms-2 submit">
+                            <img class="custom-image-size" src="{% static 'images/vnpay.png' %}" alt="Icon" class="btn-icon">
+                            Thanh toán bằng VNPAY
+                        </button>
+                    </a>
+                {% endif %}
+            </center>
+        </div>
+    </div>
+</div>
+{% endblock %}

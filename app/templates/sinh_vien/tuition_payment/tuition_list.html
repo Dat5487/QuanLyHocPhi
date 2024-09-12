@@ -1,0 +1,179 @@
+{% extends "sinh_vien/sinh_vien_base.html" %}
+{% load static %}
+{% load humanizelib %}
+{% load l10n %}
+{% block title %}Danh sách các khoản thanh toán{% endblock %}
+{% block content %}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <div class="row">
+            <div class="col-12">
+                <h4 class="m-0 font-weight-bold text-primary">Danh sách các khoản thu học phí</h4>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered" id="dataTable1" width="100%" cellspacing="0">
+                <thead>
+                <th style="width: 250px;">
+                    Năm học
+                </th>
+                <th>
+                    Học kỳ
+                </th>
+                <th>
+                    Tổng số tín chỉ
+                </th>
+                <th>
+                    Tổng số tiền
+                </th>
+                <th>
+                    Trạng thái
+                </th>
+                <th>
+                    Thao tác
+                </th>
+                </thead>
+                <tbody>
+                    {% for payment in payment_list %}
+                        <tr id="{{ payment.id }}">
+                            <td>
+                                {{ payment.class_year }}
+                            </td>
+                            <td>
+                                {% if payment.semester %}
+                                    Học kỳ 1
+                                {% else %}
+                                    Học kỳ 2
+                                {% endif %}
+                            </td>
+                            <td>{{ payment.course_credit }}</td>
+                            <td>{{ payment.payment_amount|intcomma|localize }}</td>
+                            <td>                                    
+                                {% if payment.status == True %}
+                                    <center class="text-success">Đã thanh toán</center>
+                                {% else %}
+                                    <center class="text-danger">Chưa thanh toán</center>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'tuition_detail' payment.id %}"><button class="btn btn-primary">Xem chi tiết/ Thanh toán</button></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <div class="row">
+            <div class="col-11">
+                <h4 class="m-0 font-weight-bold text-primary">Danh sách các khoản thu khác</h4>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered" id="dataTable2" width="100%" cellspacing="0">
+                <thead>
+                    <th>
+                        Mã sinh viên
+                    </th>
+
+                    <th>
+                        Tên khoản
+                    </th>
+                    <th>
+                        Ngày thêm
+                    </th>
+                    <th>
+                        Hạn nộp
+                    </th>
+                    <th>
+                        Số tiền
+                    </th>
+                    <th>
+                        Trạng thái
+                    </th>
+                    <th>
+                        Thao tác
+                    </th>
+                </thead>
+                <tbody>
+                    {% for payment in other_payment_list %}
+                    <tr id="{{ payment.id }}">
+                        <td>{{ payment.student.student_id }}</td>
+                        <td>{{ payment.other_collection_plan.payment_name }}</td>
+                        <td>{{ payment.added_date|date:"d F Y" }}</td>
+                        {% if payment.end_date == none %}
+                            <td>Không có hạn</td>
+                        {% else %}
+                            <td>{{ payment.end_date|date:"d F Y" }}</td>
+                        {% endif %}
+                        <td>{{ payment.payment_amount|intcomma|localize }}</td>
+                        <td>
+                            {% if payment.status == True %}
+                            <center class="text-success">Đã thanh toán</center>
+                            {% else %}
+                            <center class="text-danger">Chưa thanh toán</center>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'other_tuition_detail' payment.id %}"><button class="btn btn-primary">Xem chi tiết/ Thanh toán</button></a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#dataTable1').DataTable({
+            language: {
+                searchPlaceholder: "Tìm kiếm",
+                search: "",
+                "sInfo": "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+                "sInfoEmpty": "Hiển thị 0 đến 0 của 0 mục",
+                "sInfoFiltered": "Lọc từ _MAX_ mục",
+                "sLengthMenu": "Hiện _MENU_ mục",
+                "sEmptyTable": "Không có dữ liệu",
+
+            },
+            stateSave: true,
+            dom: '<"clear"><"row"<"col"l><"col"f>>rt<"row"<"col"i><"col"p>><"row"<"col"B>>',
+            buttons: [
+            ]
+        }),
+        $('#dataTable2').DataTable({
+            language: {
+                searchPlaceholder: "Tìm kiếm",
+                search: "",
+                "sInfo": "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+                "sInfoEmpty": "Hiển thị 0 đến 0 của 0 mục",
+                "sInfoFiltered": "Lọc từ _MAX_ mục",
+                "sLengthMenu": "Hiện _MENU_ mục",
+                "sEmptyTable": "Không có dữ liệu",
+
+            },
+            stateSave: true,
+            dom: '<"clear"><"row"<"col"l><"col"f>>rt<"row"<"col"i><"col"p>><"row"<"col"B>>',
+            buttons: [
+            ]
+        });
+    });
+
+    $(document).ready(function () {
+        $('.dataTables_filter input[type="search"]').css(
+            { 'width': '350px', 'display': 'inline-block', 'height': '40px' }
+        );
+    });
+</script>
+{% endblock %}

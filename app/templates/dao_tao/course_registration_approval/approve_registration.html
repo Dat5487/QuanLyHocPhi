@@ -1,0 +1,140 @@
+{% extends "dao_tao/dao_tao_base.html" %}
+{% load static %}
+{% load humanizelib %}
+{% load l10n %}
+{% block title %}Xét duyệt đăng ký{% endblock %}
+{% block content %}
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Xác nhận xóa</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Bạn có muốn xóa thông tin đăng ký của sinh viên này ?
+        </div>
+        <div class="modal-footer">
+            <a href="{% url 'course_registration_denied' registed_course.id %}">
+                <button class="btn btn-danger ms-2 ">Hủy đăng ký</button>
+            </a>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Không</button>
+        </div>
+      </div>
+    </div>
+  </div>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <div class="row">
+                <div class="col-9">
+                    <h4 class="m-0 font-weight-bold text-primary">Thông tin đăng ký tín chỉ</h4>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{% url 'approve_registration' registed_course.id %}">
+            {% csrf_token %}
+            <div class="table-responsive mt-3">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                    <th>
+                        Mã học phần
+                    </th>
+                    <th>
+                        Tên học phần
+                    </th>
+                    <th>
+                        Số tín chỉ
+                    </th>
+                    <th>
+                        Số tiền
+                    </th>
+                    <th>
+                        Chọn
+                    </th>
+                    </thead>
+                    <tbody>
+                        {% for course in courses %}
+                            <tr id="{{ course.id }}">
+                                <td>{{ course.course_id }}</td>
+                                <td>{{ course.course_name }}</td>
+                                <td>{{ course.course_credit }}</td>
+                                <td>{{ course.payment_amount|intcomma|localize }}</td>
+                                <td>
+                                    <input type="checkbox" id="a{{ course.id }}" name="course" value="{{ course.id }}" onchange="updateSum()" disabled>
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="row mt-2">
+                <label><strong>Tổng số tín chỉ :	</strong><label id="total_course_credit">0</label></label>
+            </div>
+            <div class="row mt-2">
+                <label><strong>Tổng số tiền :	</strong><label id="total_payment_amount">0</label></label>
+            </div>
+            <hr/>            
+          <div class="row">
+                <center>
+                    <button type="submit" class="btn btn-primary ms-2 submit">Xét duyệt</button>
+                    <button type="button" class="btn btn-danger ms-2 "data-bs-toggle="modal" data-bs-target="#exampleModal">Hủy đăng ký</button>
+                </center>
+            </div>
+            </form>
+        </div>
+    </div>
+
+<script src="{% static 'js/number_to_text.js' %}"></script>
+<script src="{% static 'js/alert.js' %}"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', function() {
+    {% for course in courses %}
+        {% for selected_course in selected_courses %}
+        if ("{{ course }}" == "{{ selected_course }}") {
+            var checkbox = document.getElementById("a{{ course.id }}");
+            checkbox.checked = true;
+        }
+        {% endfor %}
+    {% endfor %}
+    updateSum();
+    });
+        function updateSum() {
+        var checkboxes = document.getElementsByName('course');
+        var sum = 0;
+
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
+                {% for course in courses %}
+                if ("{{ course.id }}" == checkboxes[i].value) {
+                    sum += parseInt("{{ course.payment_amount }}");
+                }
+                {% endfor %}
+            
+            }
+        }
+        updateSumCredit();
+        document.getElementById('total_payment_amount').textContent = sum.toLocaleString() + " (" + to_vietnamese(sum).charAt(0).toUpperCase() + to_vietnamese(sum).slice(1) + ")";
+        }
+        function updateSumCredit() {
+        var checkboxes = document.getElementsByName('course');
+        var sum = 0;
+
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) {
+                {% for course in courses %}
+                if ("{{ course.id }}" == checkboxes[i].value) {
+                    sum += parseInt("{{ course.course_credit }}");
+                }
+                {% endfor %}
+            }
+        }
+        document.getElementById('total_course_credit').textContent = sum.toLocaleString();
+    }
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,152 @@
+{% extends 'tai_chinh/tai_chinh_base.html' %}
+{% load static %}
+{% block title %}Thêm kế hoạch thu{% endblock %}
+{% block content %}
+<div class="card shadow mb-4">
+  <div class="card-header py-3">
+      <h4 class="m-0 font-weight-bold text-primary">Thêm kế hoạch thu</h4>
+  </div>
+  <div class="card-body">
+        <form method="POST" action="{% url 'new_collection_plan' %}">
+            {% csrf_token %}
+            <div class="row">
+              <div class="col-4">
+                <div class="form-group mt-2">
+                  <label class="fw-bold  ">Kế hoạch năm</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <img class="custom-image-size" src="{% static 'images/namhoc.png' %}" alt="Image">
+                      </span>
+                    </div>
+                  <select class="form-control combobox" name="year" required>
+                    <option value=""></option>
+                    {% for value in years %}
+                        <option value="{{ value.id }}">{{ value.year }}</option>
+                    {% endfor %}
+                </select>
+                </div>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="form-group mt-2">
+                  <label class="fw-bold  ">Ngày bắt đầu</label>
+                  <input class="form-control" type="date" name="start_date"/>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="form-group mt-2">
+                  <label class="fw-bold  ">Ngày kết thúc</label>
+                  <input class="form-control" type="date" name="end_date"/>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6">
+                <div class="form-group mt-2">
+                  <label class="fw-bold  ">Hệ đào tạo</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <img class="custom-image-size" src="{% static 'images/hedaotao.png' %}" alt="Image">
+                      </span>
+                    </div>
+                  <select class="form-control combobox" id="study_program" onchange="handleComboboxChange()" required>
+                    <option value=""></option>
+                    {% for value in study_programs %}
+                        <option value="{{ value.study_program_name }}">{{ value.study_program_name }}</option>
+                    {% endfor %}
+                    </select>
+                    </div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="form-group mt-2">
+                  <label class="fw-bold  ">Tên ngành</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <img class="custom-image-size" src="{% static 'images/nganhdaotao.png' %}" alt="Image">
+                      </span>
+                    </div>
+                  <select class="form-control combobox" id="major" name="major" required>
+                    <option value=""></option>
+                  </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-4">
+                <div class="form-group mt-2">
+                  <label class="fw-bold  ">Khoản thu</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <img class="custom-image-size" src="{% static 'images/khoanthu.png' %}" alt="Image">
+                      </span>
+                    </div>
+                    <input class="form-control" name="khoanThu" required>
+                    </div>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="form-group mt-2">
+                  <label class="fw-bold  ">Đợt thu</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <img class="custom-image-size" src="{% static 'images/heso.png' %}" alt="Image">
+                      </span>
+                    </div>
+                  <input type="number" class="form-control" name="billing_period" min="0" step="1" required>
+                  </div>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="form-group mt-2">
+                  <label class="fw-bold  ">Số tiền</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <img class="custom-image-size" src="{% static 'images/sotien.png' %}" alt="Image">
+                      </span>
+                    </div>
+                  <input type="text" class="form-control" name="payment_amount" id="currency-field" value="" data-type="currency" required>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group mt-2">
+              <label class="fw-bold  ">Nội dung</label>
+              <textarea class="form-control" name="description" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Xác nhận</button>
+            <a class="btn btn-danger mt-3" href="{% url 'plan_list' %}">Hủy</a>
+        </form>
+    </div>
+</div>
+
+<script src="{% static 'js/convert_currency.js' %}"></script>
+
+<script>
+  function handleComboboxChange() {
+    var cmb_study_program = document.getElementById('study_program');
+    var cmb_major = document.getElementById('major');
+    var selectedValue = cmb_study_program.value;
+    selectedValue = selectedValue.trim();
+    
+    cmb_major.innerHTML = '';
+    
+    {% for value in majors %}
+      if ("{{ value.study_program.study_program_name }}" == selectedValue) {
+        var newOption = document.createElement('option');
+        newOption.value = "{{ value.id }}";
+        newOption.textContent = "{{ value.major_name }}";
+        cmb_major.appendChild(newOption);
+      }
+    {% endfor %}
+  }
+</script>
+
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends "dao_tao/dao_tao_base.html" %}
+{% load static %}
+{% load humanizelib %}
+{% load l10n %}
+{% block title %}Danh sách học phần cần xét duyệt{% endblock %}
+{% block content %}
+
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <div class="row">
+            <div class="col-9">
+                <h4 class="m-0 font-weight-bold text-primary">Danh sách học phần cần xét duyệt</h4>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        {% if alert_content == "Xét duyệt" %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <strong>Xét duyệt thành công!</strong>
+            </div>
+        {% endif %}
+        {% if alert_content == "Hủy" %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert" id="myAlert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <strong>Đã hủy đăng ký cho sinh viên</strong>
+            </div>
+        {% endif %}
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                <th>
+                    Mã sinh viên
+                </th>
+                <th>
+                    Tên sinh viên
+                </th>
+                <th>
+                    Hệ đào tạo
+                </th>
+                <th>
+                    Ngành đào tạo
+                </th>
+                <th>
+                    Lớp hành chính
+                </th>
+                <th>
+                    Năm học
+                </th>
+                <th>
+                    Học kỳ
+                </th>
+                <th>
+                    Thao tác
+                </th>
+                </thead>
+                <tbody>
+                    {% for registration in pending_registrations %}
+                        <tr id="{{ registration.id }}">
+                            <td>{{ registration.student.student_id }}</td>
+                            <td>{{ registration.student.student_name }}</td>
+                            <td>{{ registration.student.student_class.major.study_program.study_program_name }}</td>
+                            <td>{{ registration.student.student_class.major.major_name }}</td>
+                            <td>{{ registration.student.student_class.class_name }}</td>
+                            <td>{{ registration.class_year.class_year }}</td>
+                            <td>
+                                {% if registration.semester %}
+                                    <center>Học kỳ 1</center>
+                                {% else %}
+                                    <center>Học kỳ 2</center>
+                                {% endif %}
+                            </td>
+                            <td style="text-align: center;">
+                                <a href="{% url 'approve_registration' registration.id %}">
+                                    <button class="btn btn-primary">Xét duyệt</button>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/datatable.js' %}"></script>
+<script src="{% static 'js/alert.js' %}"></script>
+
+{% endblock %}

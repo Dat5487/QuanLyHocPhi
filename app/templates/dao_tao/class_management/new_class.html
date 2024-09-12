@@ -1,0 +1,80 @@
+{% extends "dao_tao/dao_tao_base.html" %}
+{% load static %}
+{% block title %}Thêm lớp{% endblock %}
+{% block content %}
+<div class="card shadow mb-4">
+  <div class="card-header py-3">
+      <h4 class="m-0 font-weight-bold text-primary">Thêm lớp</h4>
+  </div>
+  <div class="card-body">
+    <form method="POST" action="{% url 'new_class' major.id %}">
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-6">
+            <div class="form-group mt-2">
+                <label class="fw-bold  ">Hệ đào tạo</label>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <img class="custom-image-size" src="{% static 'images/hedaotao.png' %}" alt="Image">
+                    </span>
+                  </div>
+                <input class="form-control" value="{{ major.study_program.study_program_name }}" disabled/>
+                <input class="form-control" name="study_program" value="{{ major.study_program.id }}" hidden/>
+                </div>
+            </div>
+            <div class="form-group mt-2">
+                <label class="fw-bold  ">Ngành đào tạo</label>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <img class="custom-image-size" src="{% static 'images/nganhdaotao.png' %}" alt="Image">
+                    </span>
+                  </div>
+                  <input class="form-control" value="{{ major.major_name }}" disabled/>
+                  <input class="form-control" name="major" value="{{ major.id }}" hidden/>
+                </div>
+            </div>
+            <div class="form-group mt-2">
+                <label class="fw-bold  ">Khoa</label>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <img class="custom-image-size" src="{% static 'images/khoa.png' %}" alt="Image">
+                    </span>
+                  </div>
+                  <input class="form-control" value="{{ major.faculty.faculty_name }}" disabled/>
+                  <input class="form-control" name="faculty" value="{{ major.faculty.id }}" hidden/>
+                </div>
+            </div>
+            <div class="form-group mt-2">
+                <label class="fw-bold  ">Tên lớp</label>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <img class="custom-image-size" src="{% static 'images/lop.png' %}" alt="Image">
+                    </span>
+                  </div>
+                <input class="form-control" name="class_name"></input>
+                </div>
+            </div>
+            <div class="form-group mt-2">
+                <label class="fw-bold  ">Khóa</label>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <img class="custom-image-size" src="{% static 'images/khoahoc.png' %}" alt="Image">
+                    </span>
+                  </div>
+                <input class="form-control" name="enrollment_batch"></input>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Xác nhận</button>
+            <a class="btn btn-danger mt-3" href="{% url 'class_list' major.id %}">Hủy</a>
+          </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

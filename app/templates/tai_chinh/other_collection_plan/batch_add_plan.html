@@ -1,0 +1,128 @@
+{% extends 'tai_chinh/tai_chinh_base.html' %}
+{% load static %}
+{% block title %}Thêm khoản thu{% endblock %}
+{% block content %}
+<div class="card shadow mb-4">
+  <div class="card-header py-3">
+      <h4 class="m-0 font-weight-bold text-primary">Thêm khoản thu cho lớp</h4>
+  </div>
+  <div class="card-body">
+    <form method="POST" action="{% url 'batch_add_plan' student_class_id %}">
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-6">
+            <div class="form-group mt-2">
+              <label class="fw-bold  ">Khoản thu</label>
+              <select class="form-control combobox" name="other_collection_plan" id="other_collection_plan"  onchange="getKhoanThuKhacInfo()" required>
+                <option value=""></option>
+                {% for value in preset_list %}
+                  {% if value.faculty == none %}
+                    <option value="{{ value.id }}">(Tất cả khoa) {{ value.payment_name}}</option>
+                  {% else %}
+                  <option value="{{ value.id }}">({{value.faculty.faculty_name}}) {{value.payment_name}}</option>
+                  {% endif %}
+                {% endfor %}
+            </select>
+            </div>
+              <!-- Id Tàng hình -->
+              <div class="form-group mt-2">
+                <input class="form-control" value="{{ value.id }}" id="id" hidden>
+            </div>
+            <div class="form-group mt-2">
+                <label class="fw-bold  ">Nội dung : </label>
+                <label id="description"></label>
+            </div>
+          </div>
+        </div>          
+        <hr/>
+        <h5>Thông tin nội dung</h5>
+        <div class="row">
+          <div class="col-6">
+            <div class="form-group mt-2">
+              <label class="fw-bold  ">Hạn nộp</label><br/>
+              <input type="date" class="form-control" id="date" name="end_date">
+          </div>
+          <div class="form-group mt-2">
+            <label class="fw-bold  ">Tổng số tiền</label>
+            <input class="form-control" type="text" name="payment_amount" id="total_payment_amount"  data-type="currency" min="0">
+          </div>
+          </div>
+          <div class="col-6">
+            <div class="form-group mt-2">
+              <label class="fw-bold  ">Nội dung thu</label>
+              <textarea class="form-control" name="detail" rows="4" ></textarea>
+            </div>
+          </div>
+        </div>
+        <br/>
+        <button type="submit" class="btn btn-primary mt-3">Xác nhận</button>
+        <a class="btn btn-danger mt-3" href="{% url 'student_list' student_class_id %}">Hủy</a>
+    </form>
+</div>
+
+<script src="{% static 'js/convert_currency.js' %}"></script>
+<script>
+  function getSVInfo() {
+        var inputIdSV = document.getElementById('idSV');
+        var inputSV = document.getElementById('student_id');
+        var labelHoten = document.getElementById('student_name');
+        var labelNgaySinh = document.getElementById('birth_date');
+        var labelQueQuan = document.getElementById('home_town');
+        var student_id = inputSV.value;
+        inputIdSV.value = ""
+        labelHoten.textContent = ""
+        labelQueQuan.textContent = ""
+        labelNgaySinh.textContent = ""
+        {% for value in student_list %}
+          if ("{{ value.student_id }}" == student_id) {
+            inputIdSV.value = "{{ value.id }}"
+            labelHoten.textContent = "{{ value.student_name }}"
+            labelQueQuan.textContent = "{{ value.home_town }}"
+            labelNgaySinh.textContent = "{{ value.birth_date }}"
+          }
+      {% endfor %}
+        }
+  function getKhoanThuKhacInfo(event) {
+    var cmbKhoanThuKhac = document.getElementById('other_collection_plan');
+    var inputId = document.getElementById('id');
+    var inputTongSoTien = document.getElementById('total_payment_amount');
+    var labelNoiDung = document.getElementById('description');
+    var other_collection_plan = cmbKhoanThuKhac.value;
+    console.log(other_collection_plan);
+    inputId.value = "";
+    labelNoiDung.textContent = "";
+
+    {% for value in preset_list %}
+        if ("{{ value.id }}" == other_collection_plan) {
+            inputId.value = "{{ value.id }}"
+            labelNoiDung.textContent = "{{ value.description }}"
+            inputTongSoTien.value = parseInt("{{ value.payment_amount }}").toLocaleString();
+        }
+    {% endfor %}
+    }
+
+    function handleComboboxChange1() {
+    var cmb_study_program = document.getElementById('study_program');
+    var cmb_faculty = document.getElementById('faculty');
+    var cmbKhoanThuKhac = document.getElementById('other_collection_plan');
+    var selected_study_program = cmb_study_program.value;
+    var selected_faculty = cmb_faculty.value;
+    
+    cmbKhoanThuKhac.innerHTML = '';
+    {% for value in preset_list %}
+      if ("{{ value.study_program.id }}" == selected_study_program  && "{{ value.faculty.id }}" == selected_faculty) {
+        var newOption = document.createElement('option');
+        newOption.value = "{{ value.payment_name }}";
+        newOption.textContent = "{{ value.payment_name }}";
+        cmbKhoanThuKhac.appendChild(newOption);
+      }
+      else if (selected_faculty == '') {
+        var newOption = document.createElement('option');
+        newOption.value = "{{ value.payment_name }}";
+        newOption.textContent = "{{ value.payment_name }}";
+        cmbKhoanThuKhac.appendChild(newOption);
+      }
+    {% endfor %}
+    }
+</script>
+{% endblock %}

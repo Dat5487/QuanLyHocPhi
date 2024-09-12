@@ -1,0 +1,47 @@
+{% extends 'tai_chinh/tai_chinh_base.html' %}
+{% load static %}
+{% block title %}Xem kế hoạch thu{% endblock %}
+{% block content %}
+
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h4 class="m-0 font-weight-bold text-primary">Xem kế hoạch thu</h4>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <dl class="dl-horizontal">
+                <strong>Kế hoạch năm</strong> : {{ collection_plan.year.year }}
+            </dl>
+            <dl class="dl-horizontal">
+                <strong>Ngày bắt đầu</strong> : {{ collection_plan.start_date }}
+            </dl>
+            <dl class="dl-horizontal">
+                <strong>Ngày kết thúc</strong> : {{ collection_plan.end_date }}
+            </dl>
+            <dl class="dl-horizontal">
+                <strong>Tên hệ</strong> : {{ collection_plan.major.study_program.study_program_name }}
+            </dl>
+            <dl class="dl-horizontal">
+                <strong>Tên ngành</strong> : {{ collection_plan.major.major_name }}
+            </dl>
+            <dl class="dl-horizontal">
+                <strong>Khoản thu</strong> : {{ collection_plan.khoanThu }}
+            </dl>
+            <dl class="dl-horizontal">
+                <strong>Đợt thu</strong> : {{ collection_plan.billing_period }}
+            </dl>
+            <dl class="dl-horizontal">
+                <strong>Số tiền</strong> : {{ payment_amount }}
+            </dl>
+            <dl class="dl-horizontal">
+                <dt>
+                    Nội dung : 
+                </dt>
+                <dd>
+                    {{ collection_plan.description }}
+                </dd>
+            </dl>
+        </div>
+    </div>
+</div>{% endblock %}

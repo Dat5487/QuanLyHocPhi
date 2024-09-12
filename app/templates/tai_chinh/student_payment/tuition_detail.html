@@ -1,0 +1,62 @@
+{% extends 'tai_chinh/tai_chinh_base.html' %}
+{% load static %}
+{% load humanizelib %}
+{% load l10n %}
+{% block title %}Thông tin khoản thu{% endblock %}
+{% block content %}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <div class="row">
+            <div class="col-9">
+                <h4 class="m-0 font-weight-bold text-primary">Thông tin khoản thu</h4>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                <th>
+                    Mã học phần
+                </th>
+                <th>
+                    Tên học phần
+                </th>
+                <th>
+                    Số tín chỉ
+                </th>
+                <th>
+                    Số tiền
+                </th>
+                </thead>
+                <tbody>
+
+                    {% for course in tuition_payment.approved_course.registed_course.course.all %}
+                        <tr id="{{ course.id }}">
+                            <td>{{ course.course_id }}</td>
+                            <td>{{ course.course_name }}</td>
+                            <td>{{ course.course_credit }}</td>
+                            <td>{{ course.payment_amount|intcomma|localize }}</td>
+                        </tr>
+                    {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+        <div class="row mt-2">
+            <label><strong>Tổng số tín chỉ :	</strong><label id="total_course_credit">{{ tuition_payment.course_credit }}</label></label>
+        </div>
+        <div class="row mt-2">
+            <label><strong>Tổng số tiền :	</strong><label id="total_payment_amount">{{ tuition_payment.payment_amount|intcomma|localize }}</label></label>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('total_payment_amount').textContent = "{{ tuition_payment.payment_amount|intcomma|localize }}".toLocaleString() + " (" + to_vietnamese("{{ tuition_payment.payment_amount }}").charAt(0).toUpperCase() + to_vietnamese("{{ tuition_payment.payment_amount }}").slice(1) + ")";
+    });
+</script>
+
+{% endblock %}

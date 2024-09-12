@@ -1,0 +1,56 @@
+{% extends 'tai_chinh/tai_chinh_base.html' %}
+{% load static %}
+{% load humanizelib %}
+{% load l10n %}
+{% block title %}Xác nhận xóa khoản thu{% endblock %}
+{% block content %}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h4 class="m-0 font-weight-bold text-primary">Xác nhận xóa khoản thu</h4>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <dl class="dl-horizontal">
+                <strong>Mã sinh viên</strong> : {{ other_payment.student.student_id }}
+            </dl>
+            <dl class="dl-horizontal">
+                <strong>Họ tên</strong> : {{ other_payment.student.student_name }}
+            </dl>
+            <dl class="dl-horizontal">
+                <strong>Khoản thu</strong> : {{ other_payment.other_collection_plan.payment_name }}
+            </dl>
+            <dl class="dl-horizontal">
+                {% if other_payment.end_date == none %}
+                    <strong>Hạn nộp</strong> : Không có hạn
+                {% else %}
+                    <strong>Hạn nộp</strong> : {{ other_payment.end_date }}
+                {% endif %}
+            </dl>
+            <dl class="dl-horizontal">
+                <strong>Tổng số tiền</strong> : {{ other_payment.payment_amount|intcomma|localize }}
+            </dl>
+            <dl class="dl-horizontal">
+                <dt>
+                    Nội dung thu : 
+                </dt>
+                <dd>
+                    {% if other_payment.detail == none %}
+                        Không có nội dung
+                    {% else %}
+                        {{ other_payment.detail }}
+                    {% endif %}
+                </dd>
+            </dl>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 ">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="submit" value="Xóa" class="btn btn-primary" />
+                    <a class="btn btn-danger" href="{% url 'student_list' student_class_id %}">Hủy</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>{% endblock %}

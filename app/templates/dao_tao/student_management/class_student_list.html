@@ -1,0 +1,128 @@
+{% extends "dao_tao/dao_tao_base.html" %}
+{% load static %}
+{% load humanizelib %}
+{% load l10n %}
+{% block title %}Danh sách sinh viên trong lớp{% endblock %}
+{% block content %}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <div class="row">
+            <div class="col-7">
+                <h4 class="m-0 font-weight-bold text-primary">Danh sách sinh viên trong lớp : {{ student_class.class_name }}</h4>
+            </div>
+            <div class="col-5">
+                <a href="{% url 'class_list' student_class.major.id %}"><button class = "btn btn-danger float-end" >Quay lại</button></a>
+                <a href="{% url 'create_student' student_class.id %}"><button class = "btn btn-success float-end me-1" >Thêm sinh viên</button></a>
+
+                <button type="button" class="btn btn-primary float-end me-1" data-bs-toggle="modal" data-bs-target="#myModal">
+                    <i class="fa fa-plus-circle"></i> Nhập File Excel
+                </button>
+                <div class="modal fade" id="myModal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Nhập File Excel</h4>
+                                <button type="button" class="close" data-bs-dismiss="modal">×</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <form method="post" enctype="multipart/form-data" action="{% url 'excel_import_students' student_class.id %}">
+                                            {% csrf_token %}
+                                            <div class="d-flex justify-content-center">
+                                                <input name="excel_file" type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" required />
+                                                <button class="btn btn-success" type="submit">Nhập</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Đóng</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        {% if alert_content == "Create" %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <strong>Thêm sinh viên vào lớp thành công!</strong>
+          </div>
+        {% endif %}
+        {% if alert_content == "Delete" %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <strong>Xóa sinh viên thành công!</strong>
+          </div>
+        {% endif %}
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <th>
+                        Mã sinh viên
+                    </th>
+                    <th>
+                        Họ tên
+                    </th>
+                    <th>
+                        Giới tính
+                    </th>
+                    <th>
+                        Ngày sinh
+                    </th>
+                    <th>
+                        Quê quán
+                    </th>
+                    <th>
+                        Lớp
+                    </th>
+                    <th>
+                        Trạng thái
+                    </th>
+                    <th>
+                        Thao tác
+                    </th>
+                </thead>
+                <tbody>
+                    {% for student in student_list %}
+                    <tr id="{{ student.id }}">
+                        <td>{{ student.student_id }}</td>
+                        <td>{{ student.student_name }}</td>
+                        <td>{{ student.gender }}</td>
+                        <td>{{ student.birth_date }}</td>
+                        <td>{{ student.home_town }}</td>
+                        <td>{{ student.student_class.class_name }}</td>
+                        <td>
+                            {% if student.status %}
+                            <center class="text-success">Đang học</center>
+                            {% else %}
+                            <center class="text-danger">Nghỉ học</center>
+                            {% endif %}
+                        </td>
+                        <td style="text-align: center;">
+                            <a href="{% url 'detail_student' student.id %}">
+                                <i class="fas fa-circle-info bigger-icon"></i>
+                            </a>
+                            <a href="{% url 'edit_student' student.id %}">
+                                <i class="fas fa-pen-to-square bigger-icon"></i>
+                            </a>
+                            <a href="{% url 'delete_student' student.id %}">
+                                <i class="far fa-trash-alt bigger-icon"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="{% static 'js/datatable.js' %}"></script>
+
+{% endblock %}

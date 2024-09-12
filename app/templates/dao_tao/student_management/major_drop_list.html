@@ -1,0 +1,60 @@
+{% extends "dao_tao/dao_tao_base.html" %}
+{% load static %}
+{% block title %}Danh sách ngành đào tạo{% endblock %}
+{% block content %}
+
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h4 class="m-0 font-weight-bold text-primary">Danh sách ngành đào tạo</h4>
+    </div>
+    <div class="card-body">
+        <nav class="sb-sidenav accordion sb-sidenav-light" id="sidenavAccordion">
+            <div class="sb-sidenav-menu">
+                <div class="nav">
+                    <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                        <h6>Danh sách hệ đào tạo</h6>
+                        {% for study_program in study_programs %}
+                            <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#idHeDaoTao{{ study_program.id }}" aria-expanded="false" aria-controls="collapsePages">
+                                <div class="sb-nav-link-icon"><img class="custom-image-size" src="{% static 'images/hedaotao.png' %}"></div>
+                                {{ study_program.study_program_name }}
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="idHeDaoTao{{ study_program.id }}" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                    <hr/>
+                                    <h6>Danh sách faculty</h6>
+                                    {% for faculty in faculties %}
+                                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#idKhoa{{ study_program.id }}{{ faculty.id }}" aria-expanded="false" aria-controls="collapsePages">
+                                            <div class="sb-nav-link-icon"><img class="custom-image-size" src="{% static 'images/khoa.png' %}"></div>
+                                            {{ faculty.faculty_name }}
+                                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                        </a>
+                                        <div class="collapse" id="idKhoa{{ study_program.id }}{{ faculty.id }}" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                                            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                                <hr/>
+                                                <h6>Danh sách ngành đào tạo</h6>
+                                                {% for major in majors %}
+                                                    {% if major.faculty == faculty and major.study_program == study_program %}
+                                                    <a class="nav-link collapsed" href="{% url 'class_list' major.id %}" aria-expanded="false" >
+                                                    <div class="sb-nav-link-icon"><img class="custom-image-size" src="{% static 'images/nganhdaotao.png' %}"></div>
+                                                    {{ major.major_name }}
+                                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                                    </a>
+                                                    {% endif %}
+                                                {%  endfor %}
+                                            </nav>
+                                        </div>
+                                    {%  endfor %}
+                                </nav>
+                            </div>
+                        {%  endfor %}
+                    </nav>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+
+{% endblock %}

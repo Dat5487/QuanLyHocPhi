@@ -1,0 +1,118 @@
+{% extends "sinh_vien/sinh_vien_base.html" %}
+{% load static %}
+{% load humanizelib %}
+{% load l10n %}
+{% block title %}Đăng ký tín chỉ{% endblock %}
+{% block content %}
+
+<div class="card shadow mb-4">
+  <div class="card-header py-3">
+    <h4 class="m-0 font-weight-bold text-primary">Đăng ký tín chỉ</h4>
+  </div>
+  <div class="card-body">
+    {% if alert_content == "register" %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <strong>Cập nhật thành công!</strong>
+      </div>
+    {% endif %}
+    {% if status != False %}
+    <form method="POST" action="{% url 'course_registration' %}">
+      {% csrf_token %}
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                <th>
+                    Mã học phần
+                </th>
+                <th>
+                    Tên học phần
+                </th>
+                <th>
+                    Số tín chỉ
+                </th>
+                <th>
+                    Số tiền
+                </th>
+                <th>
+                    Chọn
+                </th>
+                </thead>
+                <tbody>
+                    {% for course in courses %}
+                        <tr id="{{ course.id }}">
+                            <td>{{ course.course_id }}</td>
+                            <td>{{ course.course_name }}</td>
+                            <td>{{ course.course_credit }}</td>
+                            <td>{{ course.payment_amount|intcomma|localize }}</td>
+                            <td>
+                              <input type="checkbox" id="a{{ course.id }}" name="course" value="{{ course.id }}" onchange="updateSum()">
+                            </td>
+                          </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="row mt-2">
+          <label><strong>Tổng số tín chỉ :	</strong><label id="total_course_credit">0</label></label>
+        </div>
+        <div class="row mt-2">
+            <label><strong>Tổng số tiền :	</strong><label id="total_payment_amount">0</label></label>
+        </div>
+      <center><button type="submit" class="btn btn-primary mt-3">Xác nhận</button></center>
+    </form>
+    {% else %}
+    <center><strong>Bạn không có học phần có thể đăng ký trong thời điểm này</strong></center>
+    {% endif %}
+ 
+  </div>
+</div>
+
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+  {% for course in courses %}
+    {% for selected_course in selected_courses %}
+      if ("{{ course }}" == "{{ selected_course }}") {
+        console.log("{{ course.id }}")
+        var checkbox = document.getElementById("a{{ course.id }}");
+        checkbox.checked = true;
+      }
+    {% endfor %}
+  {% endfor %}
+  updateSum();
+});
+</script>
+<script>
+  function updateSum() {
+    var checkboxes = document.getElementsByName('course');
+    var sum = 0;
+
+    for (var i = 0; i < checkboxes.length; i++) {
+      if (checkboxes[i].checked) {
+          {% for course in courses %}
+          if ("{{ course.id }}" == checkboxes[i].value) {
+              sum += parseInt("{{ course.payment_amount }}");
+          }
+          {% endfor %}
+      }
+    }
+    updateSumCredit();
+    document.getElementById('total_payment_amount').textContent = sum.toLocaleString() + " (" + to_vietnamese(sum).charAt(0).toUpperCase() + to_vietnamese(sum).slice(1) + ")";
+  }
+  function updateSumCredit() {
+    var checkboxes = document.getElementsByName('course');
+    var sum = 0;
+
+    for (var i = 0; i < checkboxes.length; i++) {
+      if (checkboxes[i].checked) {
+          {% for course in courses %}
+          if ("{{ course.id }}" == checkboxes[i].value) {
+              sum += parseInt("{{ course.course_credit }}");
+          }
+          {% endfor %}
+      }
+    }
+    document.getElementById('total_course_credit').textContent = sum.toLocaleString();
+  }
+</script>
+{% endblock %}

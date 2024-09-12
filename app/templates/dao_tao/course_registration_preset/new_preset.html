@@ -1,0 +1,327 @@
+{% extends "dao_tao/dao_tao_base.html" %}
+{% load static %}
+{% load humanizelib %}
+{% load l10n %}
+{% block title %}Thêm thiết lập học phần được đăng ký{% endblock %}
+{% block content %}
+<div class="card shadow mb-4">
+  <div class="card-header py-3">
+    <h4 class="m-0 font-weight-bold text-primary">Thêm thiết lập học phần được đăng ký</h4>
+  </div>
+  <div class="card-body">
+    <form method="POST" action="{% url 'new_preset' %}">
+      {% csrf_token %}
+      <div class="row">
+        <div class="form-group mt-2">
+          <label class="fw-bold  ">Hệ đào tạo</label>
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text">
+                <img class="custom-image-size" src="{% static 'images/hedaotao.png' %}" alt="Image">
+              </span>
+            </div>
+          <select class="form-control combobox" id="study_program" name="study_program" onchange="filterComboBox()" required>
+            <option value=""></option>
+            {% for value in study_programs %}
+                <option value="{{ value.id }}">{{ value.study_program_name }}</option>
+            {% endfor %}
+        </select>
+        </div>
+        </div>
+        <div class="form-group mt-2">
+          <label class="fw-bold  ">Khoa</label>
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text">
+                <img class="custom-image-size" src="{% static 'images/khoa.png' %}" alt="Image">
+              </span>
+            </div>
+          <select class="form-control combobox" name="faculty" id="faculty" onchange="filterComboBox()">
+            <option value=""></option>
+            {% for value in faculties %}
+            <option value="{{ value.faculty_name }}">{{ value.faculty_name }}</option>
+            {% endfor %}
+            </select>
+        </div>
+        </div>
+        <div class="form-group mt-2">
+          <label class="fw-bold  ">Ngành đào tạo</label>
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text">
+                <img class="custom-image-size" src="{% static 'images/nganhdaotao.png' %}" alt="Image">
+              </span>
+            </div>
+            <select class="form-control combobox" id="major" name="major" onchange="FilterRows()" required>
+              <option value=""></option>
+
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="form-group mt-2">
+        <label class="fw-bold  ">Khóa</label>
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text">
+              <img class="custom-image-size" src="{% static 'images/muchocphi.png' %}" alt="Image">
+            </span>
+          </div>
+        <input type="number" class="form-control" name="enrollment_batch" required>
+      </div>
+    </div>
+      <div class="row">
+        <div class="form-group mt-2">
+          <label class="fw-bold  ">Năm học</label>
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text">
+                <img class="custom-image-size" src="{% static 'images/namhoc.png' %}" alt="Image">
+              </span>
+            </div>
+            <select class="form-control combobox" name="class_year" required>
+              <option value=""></option>
+              {% for value in class_years %}
+              <option value="{{ value.id }}">{{ value.class_year }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+        <div class="row">
+          <div class="form-group mt-2">
+            <label class="fw-bold  ">Học kỳ</label>
+            <br />
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="semester" id="hocKy1" value="True" required>
+              <label class="form-check-label" for="hocKy1">Học kỳ 1</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="semester" id="hocKy2" value="False" required>
+              <label class="form-check-label" for="hocKy2">Học kỳ 2</label>
+            </div>
+          </div>
+        </div>
+      <hr/>
+      <div class="row">
+        <div class="col-3">
+            <div class="row">
+                <div class="col-4 mt-2 ">
+                  <label class="fw-bold float-end">Loại học phần</label>
+                </div>
+                <div class="col-8">
+                <select class="form-control combobox" name="course_type" id="course_type" onchange="FilterRows()"
+                    required>
+                    <option value="all">Tất cả</option>
+                    <option value="Đại cương">Đại cương</option>
+                    <option value="Chuyên ngành">Chuyên ngành</option>
+                </select>
+                </div>
+              </div>
+        </div>
+      </div>
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                <th>
+                    Loại học phần
+                </th>
+                <th>
+                    Hệ đào tạo
+                </th>
+                <th>
+                    Ngành đào tạo
+                </th>
+                <th>
+                    Mã học phần
+                </th>
+                <th>
+                    Tên học phần
+                </th>
+                <th>
+                    Số tín chỉ
+                </th>
+                <th>
+                    Số tiền
+                </th>
+                <th>
+                    Chọn
+                </th>
+                </thead>
+                <tbody>
+                    {% for course in courses %}
+                        <tr id="{{ course.id }}">
+                            {% if course.major == None %}
+                                <td>Đại cương</td>
+                            {% else %}
+                                <td>Chuyên ngành</td>
+                            {% endif %}
+                            <td>{{ course.study_program.study_program_name }}</td>
+                            <td>{{ course.major.major_name }}</td>
+                            <td>{{ course.course_id }}</td>
+                            <td>{{ course.course_name }}</td>
+                            <td>{{ course.course_credit }}</td>
+                            <td>{{ course.payment_amount|intcomma|localize }}</td>
+                            <td><input type="checkbox" name="course" value="{{ course.id }}" id="{{ course.id }}" onchange="updateSum(this,'{{ course.id }}')"></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="row mt-2">
+              <label><strong>Tổng số tín chỉ :	</strong><label id="total_course_credit">0</label></label>
+        </div>
+        <div class="row mt-2">
+              <label><strong>Tổng số tiền :	</strong><label id="total_payment_amount">0</label></label>
+        </div>
+        <hr/>
+      <div class="row">
+        <div class="form-group mt-2" hidden>
+          <label class="fw-bold  ">Trạng thái</label>
+          <br />
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="status" id="trangThai1" value="True">
+            <label class="form-check-label" for="trangThai1">Cho đăng ký</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="status" id="trangThai2" value="False" checked>
+            <label class="form-check-label" for="trangThai2">Chưa cho đăng ký</label>
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary mt-2">Xác nhận</button>
+      <a class="btn btn-danger mt-2" href="{% url 'course_registration_preset_list' %}">Hủy</a>
+    </form>
+  </div>
+</div>
+
+<script src="{% static 'js/datatable_no_export.js' %}"></script>
+
+<script>
+  var selectedRows = [];
+    function updateSum(checkbox,rowId) {
+      var checkboxes = document.getElementsByName('course');
+      var sum = 0;
+      for (var i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i].checked) {
+            {% for course in courses %}
+            if ("{{ course.id }}" == checkboxes[i].value) {
+                sum += parseInt("{{ course.payment_amount }}");
+            }
+            {% endfor %}
+        }
+      }
+      updateSumTin();
+      document.getElementById('total_payment_amount').textContent = sum.toLocaleString() + " (" + to_vietnamese(sum).charAt(0).toUpperCase() + to_vietnamese(sum).slice(1) + ")";
+  
+      var row = checkbox.parentNode.parentNode; // Assuming checkbox is in a <td> inside the <tr>
+      if (checkbox.checked) {
+        selectedRows.push(rowId);
+      } else {
+        var index = selectedRows.indexOf(rowId);
+        if (index !== -1) {
+          selectedRows.splice(index, 1);
+        }
+      }
+    }
+    function updateSumTin() {
+      var checkboxes = document.getElementsByName('course');
+      var sum = 0;
+  
+      for (var i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i].checked) {
+            {% for course in courses %}
+            if ("{{ course.id }}" == checkboxes[i].value) {
+                sum += parseInt("{{ course.course_credit }}");
+            }
+            {% endfor %}
+          
+        }
+      }
+      document.getElementById('total_course_credit').textContent = sum.toLocaleString();
+    }
+</script>
+
+<script>
+  const table = $('#dataTable').DataTable();
+  const originalData = table.rows().data();
+
+  function filterComboBox() {
+    var cmb_study_program = document.getElementById('study_program');
+    var cmb_major = document.getElementById('major');
+    var cmb_faculty = document.getElementById('faculty');
+    var selected_study_program = cmb_study_program.value;
+    var selected_faculty = cmb_faculty.value;
+    
+    cmb_major.innerHTML = '';
+
+    {% for value in majors %}
+      if ("{{ value.study_program.id }}" == selected_study_program && "{{ value.faculty.faculty_name }}" == selected_faculty) {
+        var newOption = document.createElement('option');
+        newOption.value = "{{ value.id }}";
+        newOption.textContent = "{{ value.major_name }}";
+        cmb_major.appendChild(newOption);
+      }
+    {% endfor %}
+    FilterRows();
+}
+function FilterRows() {
+    var course_type = $('#course_type').val();
+    var cmb_major = document.getElementById('major');
+    var nganhDaoTaoOption = cmb_major.options[cmb_major.selectedIndex];
+    if (nganhDaoTaoOption == null){
+      var major = null
+    } else {
+      var major = nganhDaoTaoOption.textContent;
+    }
+     
+
+    var cmb_study_program = document.getElementById('study_program');
+    var heDaoTaoOption = cmb_study_program.options[cmb_study_program.selectedIndex];
+    var study_program = heDaoTaoOption.textContent;
+
+    table.clear();
+    if (course_type === 'all') {
+      originalData.each(function(value, index) {
+            if (value[0] === "Đại cương" && value[1] === study_program) {
+                table.row.add(value);
+            }
+            else if (value[2] === major) {
+                table.row.add(value);
+            }
+        });
+
+    } 
+    if (course_type === "Đại cương" ) {
+        originalData.each(function(value, index) {
+            if (value[0] === course_type && value[1] === study_program) {
+                table.row.add(value);
+            }
+        });
+    }
+    else if (course_type === "Chuyên ngành") {
+      originalData.each(function(value, index) {
+            if (value[0] === course_type && value[2]=== major) {
+                table.row.add(value);
+            }
+        });
+    }   
+    table.draw();
+    checkSelectedRows();
+    updateSumTin();
+}
+
+function checkSelectedRows() {
+  for (var i = 0; i < selectedRows.length; i++) {
+    var row = document.getElementById(selectedRows[i]);
+
+    if (row) {
+      var checkbox = row.querySelector('input[type="checkbox"]');
+      if (checkbox) {
+        checkbox.checked = true;
+      }
+    }
+  }
+}
+</script>
+{% endblock %}

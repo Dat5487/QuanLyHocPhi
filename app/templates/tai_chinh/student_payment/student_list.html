@@ -1,0 +1,334 @@
+{% extends 'tai_chinh/tai_chinh_base.html' %}
+{% load static %}
+{% load humanizelib %}
+{% load l10n %}
+{% block title %}Danh sách khoản thu học phí trong lớp{% endblock %}
+{% block content %}
+
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <div class="row">
+            <div class="col-12">
+                <h4 class="m-0 font-weight-bold text-primary">Danh sách khoản thu học phí trong lớp : {{ student_class.class_name }}</h4>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered" id="dataTable1" width="100%" cellspacing="0">
+                <thead>
+                    <th>
+                        Mã sinh viên
+                    </th>
+                    <th>
+                        Họ tên
+                    </th>
+                    <th>
+                        Năm học
+                    </th>
+                    <th>
+                        Học kỳ
+                    </th>
+                    <th>
+                        Tổng số tiền
+                    </th>
+                    <th>
+                        Số tín chỉ
+                    </th>
+                    <th>
+                        Trạng thái
+                    </th>
+                    <th>
+                        Thao tác
+                    </th>
+                </thead>
+                <tbody>
+                    {% for tuition in tuition_list %}
+                    <tr id="{{ tuition.id }}">
+                        <td>{{ tuition.student.student_id }}</td>
+                        <td>{{ tuition.student.student_name }}</td>
+                        <td>{{ tuition.approved_course.registed_course.class_year.class_year }}</td>
+                        <td>
+                            {% if tuition.approved_course.registed_course.semester == True %}
+                            Học kỳ 1
+                            {% else %}
+                            Học kỳ 2
+                            {% endif %}
+                        </td>
+                        <td>{{ tuition.payment_amount|intcomma|localize }}</td>
+                        <td>{{ tuition.course_credit }}</td>
+                        <td>
+                            {% if tuition.status == True %}
+                            <center class="text-success">Đã nộp</center>
+                            {% else %}
+                            <center class="text-danger">Chưa nộp</center>
+                            {% endif %}
+                        </td>
+                        <td style="text-align: center;">
+                            <a href="{% url 'student_payment' tuition.id %}">
+                                <i class="fas fa-circle-info bigger-icon"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <div class="row">
+            <div class="col-7">
+                <h4 class="m-0 font-weight-bold text-primary">Danh sách khoản thu khác trong lớp : {{ student_class.class_name }}</h4>
+            </div>
+            <div class="col-5">
+                <a href={% url 'add_plan' student_class.id %}><button class="btn btn-success float-end">Thêm khoản
+                        thu</button></a>
+                <a href={% url 'batch_add_plan' student_class.id %}><button class="btn btn-success float-end mx-2">Thêm
+                        khoản thu cho lớp</button></a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        {% if alert_content == "Create" %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <strong>Thêm khoản thu thành công!</strong>
+        </div>
+        {% endif %}
+        {% if alert_content == "Edit" %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <strong>Sửa khoản thu thành công!</strong>
+        </div>
+        {% endif %}
+        {% if alert_content == "Delete" %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="myAlert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <strong>Xóa khoản thu thành công!</strong>
+        </div>
+        {% endif %}
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered" id="dataTable2" width="100%" cellspacing="0">
+                <thead>
+                    <th>
+                        Mã sinh viên
+                    </th>
+                    <th>
+                        Họ tên
+                    </th>
+                    <th>
+                        Tên khoản
+                    </th>
+                    <th>
+                        Ngày thêm
+                    </th>
+                    <th>
+                        Hạn nộp
+                    </th>
+                    <th>
+                        Số tiền
+                    </th>
+                    <th>
+                        Trạng thái
+                    </th>
+                    <th>
+                        Thao tác
+                    </th>
+                </thead>
+                <tbody>
+                    {% for tuition in preset_list %}
+                    <tr id="{{ tuition.id }}">
+                        <td>{{ tuition.student.student_id }}</td>
+                        <td>{{ tuition.student.student_name }}</td>
+                        <td>{{ tuition.other_collection_plan.payment_name }}</td>
+                        <td>{{ tuition.added_date|date:"d F Y" }}</td>
+                        {% if tuition.end_date == none %}
+                            <td>Không có hạn</td>
+                        {% else %}
+                            <td>{{ tuition.end_date|date:"d F Y" }}</td>
+                        {% endif %}
+                        <td>{{ tuition.payment_amount|intcomma|localize }}</td>
+                        <td>
+                            {% if tuition.status == True %}
+                            <center class="text-success">Đã nộp</center>
+                            {% else %}
+                            <center class="text-danger">Chưa nộp</center>
+                            {% endif %}
+                        </td>
+                        <td style="text-align: center;">
+                            <a href="{% url 'other_collection_payment_detail' tuition.id %}">
+                                <i class="fas fa-circle-info bigger-icon"></i>
+                            </a>
+                            {% if tuition.status == False %}
+                                <a href="{% url 'delete_other_collection_payment' tuition.id %}">
+                                    <i class="far fa-trash-alt bigger-icon"></i>
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <div class="row">
+            <div class="col-12">
+                <h4 class="m-0 font-weight-bold text-primary">Danh sách sinh viên trong lớp : {{ student_class.class_name }}</h4>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered" id="dataTable3" width="100%" cellspacing="0">
+                <thead>
+                    <th>
+                        Mã sinh viên
+                    </th>
+                    <th>
+                        Họ tên
+                    </th>
+                    <th>
+                        Ngày sinh
+                    </th>
+                    <th>
+                        Quê quán
+                    </th>
+                    <th>
+                        Lớp
+                    </th>
+                    <th>
+                        Trạng thái
+                    </th>
+                    <th>
+                        Thao tác
+                    </th>
+                </thead>
+                <tbody>
+                    {% for student in student_list %}
+                    <tr id="{{ student.id }}">
+                        <td>{{ student.student_id }}</td>
+                        <td>{{ student.student_name }}</td>
+                        <td>{{ student.birth_date }}</td>
+                        <td>{{ student.home_town }}</td>
+                        <td>{{ student.student_class.class_name }}</td>
+                        <td>
+                            {% if student.status %}
+                            <center class="text-success">Đang học</center>
+                            {% else %}
+                            <center class="text-danger">Nghỉ học</center>
+                            {% endif %}
+                        </td>
+                        <td style="text-align: center;">
+                            <a href="{% url 'student_tuition_list' student.id %}">
+                                <i class="fas fa-circle-info bigger-icon"></i>
+                            </a>
+                            <a href="{% url 'tuition_payment_list' student.id %}">
+                                <i class="fa-solid fa-clock-rotate-left bigger-icon"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+$('#dataTable1').DataTable({
+            language: {
+                searchPlaceholder: "Tìm kiếm",
+                search: "",
+                "sInfo": "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+                "sInfoEmpty": "Hiển thị 0 đến 0 của 0 mục",
+                "sInfoFiltered": "Lọc từ _MAX_ mục",
+                "sLengthMenu": "Hiện _MENU_ mục",
+                "sEmptyTable": "Không có dữ liệu",
+
+            },
+            stateSave: true,
+            dom: '<"clear"><"row"<"col"l><"col"f>>rt<"row"<"col"i><"col"p>><"row"<"col"B>>',
+            buttons: [
+                {
+                    extend: 'excel',
+                    exportOptions: {
+                        columns: ':not(:last-child)',
+                    }, title: ''
+                }, {
+                    extend: 'pdf',
+                    exportOptions: {
+                        columns: ':not(:last-child)',
+                    }, title: ''
+                }
+            ]
+        });
+
+$('#dataTable2').DataTable({
+            language: {
+                searchPlaceholder: "Tìm kiếm",
+                search: "",
+                "sInfo": "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+                "sInfoEmpty": "Hiển thị 0 đến 0 của 0 mục",
+                "sInfoFiltered": "Lọc từ _MAX_ mục",
+                "sLengthMenu": "Hiện _MENU_ mục",
+                "sEmptyTable": "Không có dữ liệu",
+
+            },
+            stateSave: true,
+            dom: '<"clear"><"row"<"col"l><"col"f>>rt<"row"<"col"i><"col"p>><"row"<"col"B>>',
+            buttons: [
+                {
+                    extend: 'excel',
+                    exportOptions: {
+                        columns: ':not(:last-child)',
+                    }, title: ''
+                }, {
+                    extend: 'pdf',
+                    exportOptions: {
+                        columns: ':not(:last-child)',
+                    }, title: ''
+                }
+            ]
+        });
+
+$('#dataTable3').DataTable({
+            language: {
+                searchPlaceholder: "Tìm kiếm",
+                search: "",
+                "sInfo": "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+                "sInfoEmpty": "Hiển thị 0 đến 0 của 0 mục",
+                "sInfoFiltered": "Lọc từ _MAX_ mục",
+                "sLengthMenu": "Hiện _MENU_ mục",
+                "sEmptyTable": "Không có dữ liệu",
+
+            },
+            stateSave: true,
+            dom: '<"clear"><"row"<"col"l><"col"f>>rt<"row"<"col"i><"col"p>><"row"<"col"B>>',
+            buttons: [
+                {
+                    extend: 'excel',
+                    exportOptions: {
+                        columns: ':not(:last-child)',
+                    }, title: ''
+                }, {
+                    extend: 'pdf',
+                    exportOptions: {
+                        columns: ':not(:last-child)',
+                    }, title: ''
+                }
+            ]
+        });
+$('.dataTables_filter input[type="search"]').css({
+    width: '350px',
+    display: 'inline-block',
+    height: '40px',
+});
+
+</script>
+{% endblock %}
